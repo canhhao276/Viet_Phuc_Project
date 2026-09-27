@@ -1,0 +1,126 @@
+.modalBackdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(10, 12, 18, 0.88);
+  backdrop-filter: blur(12px);
+  z-index: 1100;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+}
+
+.modalWindow {
+  width: 100%;
+  max-width: 640px;
+  background: #181C26;
+  border: 1px solid #D4AF37;
+  border-left: 5px solid #FFAA44;
+  border-radius: var(--radius-lg);
+  box-shadow: 0 25px 60px rgba(0, 0, 0, 0.8), 0 0 30px rgba(255, 170, 68, 0.25);
+  overflow: hidden;
+}
+
+.modalHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px 24px;
+  background: rgba(22, 26, 38, 0.95);
+  border-bottom: 1px solid rgba(212, 175, 55, 0.2);
+}
+
+.headerTitleGroup {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.warningIconBig {
+  font-size: 1.6rem;
+}
+
+.modalTitle {
+  font-family: var(--font-heading);
+  font-size: 1.25rem;
+  color: #FFAA44;
+}
+
+.closeBtn {
+  font-size: 1.4rem;
+  color: var(--text-muted);
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.closeBtn:hover {
+  color: #FFFFFF;
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.modalBody {
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.introText {
+  font-size: 0.9rem;
+  line-height: 1.6;
+  color: #F6F5F3;
+}
+
+.warningBlock {
+  background: rgba(140, 70, 0, 0.18);
+  border: 1px solid rgba(212, 175, 55, 0.4);
+  border-radius: var(--radius-sm);
+  padding: 14px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.warningItemTitle {
+  font-size: 0.92rem;
+  font-weight: 700;
+  color: #FFAA44;
+}
+
+.warningItemDesc {
+  font-size: 0.82rem;
+  color: var(--text-secondary);
+  line-height: 1.5;
+}
+
+.solutionBox {
+  background: rgba(46, 111, 104, 0.18);
+  border: 1px solid var(--color-jade);
+  border-radius: var(--radius-sm);
+  padding: 14px 16px;
+}
+
+.solutionTitle {
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: #3D8C84;
+  margin-bottom: 6px;
+}
+
+.solutionDesc {
+  font-size: 0.82rem;
+  color: var(--text-primary);
+  line-height: 1.5;
+}
+
+.modalFooter {
+  padding: 16px 24px;
+  background: rgba(20, 24, 34, 0.7);
+  display: flex;
+  justify-content: flex-end;
+  border-top: 1px solid rgba(255, 255, 255, 0.06);
+}

@@ -1,0 +1,235 @@
+.modalBackdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(10, 12, 18, 0.88);
+  backdrop-filter: blur(12px);
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+}
+
+.modalWindow {
+  width: 100%;
+  max-width: 1080px;
+  max-height: 88vh;
+  background: #151924;
+  border: 1px solid var(--color-gold);
+  border-radius: var(--radius-lg);
+  box-shadow: 0 25px 60px rgba(0, 0, 0, 0.8), 0 0 35px rgba(212, 175, 55, 0.2);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.modalHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px 28px;
+  background: rgba(22, 26, 38, 0.95);
+  border-bottom: 1px solid rgba(212, 175, 55, 0.2);
+}
+
+.modalTitleGroup {
+  display: flex;
+  flex-direction: column;
+}
+
+.modalTitle {
+  font-family: var(--font-heading);
+  font-size: 1.5rem;
+  color: var(--color-gold);
+}
+
+.modalSub {
+  font-size: 0.82rem;
+  color: var(--text-muted);
+}
+
+.closeBtn {
+  font-size: 1.5rem;
+  color: var(--text-muted);
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all var(--transition-fast);
+}
+
+.closeBtn:hover {
+  color: #FFFFFF;
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.modalContent {
+  padding: 24px 28px;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+/* Compare Mode Section */
+.compareSection {
+  background: rgba(212, 175, 55, 0.05);
+  border: 1px solid rgba(212, 175, 55, 0.3);
+  border-radius: var(--radius-md);
+  padding: 18px;
+}
+
+.compareHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 14px;
+}
+
+.compareTitle {
+  font-size: 1.1rem;
+  color: var(--color-gold);
+}
+
+.compareGrid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 16px;
+}
+
+.compareCard {
+  background: rgba(26, 30, 41, 0.85);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: var(--radius-sm);
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.compareCardActive {
+  border-color: var(--color-gold);
+}
+
+/* Gallery Grid */
+.galleryGrid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 18px;
+}
+
+.emptyState {
+  text-align: center;
+  padding: 60px 20px;
+  color: var(--text-muted);
+}
+
+.emptyIcon {
+  font-size: 2.5rem;
+  margin-bottom: 12px;
+  display: block;
+}
+
+.lookItem {
+  background: rgba(26, 30, 41, 0.7);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  transition: all var(--transition-normal);
+}
+
+.lookItem:hover {
+  border-color: var(--color-gold);
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-gold);
+}
+
+.lookHeader {
+  padding: 12px 14px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: rgba(15, 17, 23, 0.6);
+}
+
+.lookTitle {
+  font-size: 1rem;
+  color: #FFFFFF;
+  font-weight: 600;
+}
+
+.lookScore {
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: var(--color-gold);
+  background: rgba(212, 175, 55, 0.15);
+  padding: 2px 8px;
+  border-radius: var(--radius-full);
+}
+
+.lookBody {
+  padding: 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  flex: 1;
+}
+
+.lookDetailRow {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.8rem;
+}
+
+.lookLabel {
+  color: var(--text-muted);
+}
+
+.lookVal {
+  color: var(--text-primary);
+  font-weight: 500;
+}
+
+.colorPreviewDot {
+  display: inline-block;
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  border: 1px solid rgba(255, 255, 255, 0.4);
+  vertical-align: middle;
+  margin-left: 6px;
+}
+
+.lookActions {
+  padding: 10px 14px;
+  border-top: 1px solid rgba(255, 255, 255, 0.06);
+  display: flex;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.selectCompareBtn {
+  font-size: 0.78rem;
+  color: var(--color-gold);
+  border: 1px solid var(--color-gold);
+  padding: 6px 12px;
+  border-radius: var(--radius-full);
+}
+
+.selectCompareBtn:hover {
+  background: rgba(212, 175, 55, 0.2);
+}
+
+.deleteBtn {
+  font-size: 0.78rem;
+  color: var(--text-muted);
+  padding: 6px 10px;
+}
+
+.deleteBtn:hover {
+  color: #FF6B6B;
+}

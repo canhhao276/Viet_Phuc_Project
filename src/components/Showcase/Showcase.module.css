@@ -1,0 +1,250 @@
+.sectionWrapper {
+  padding: 90px 24px;
+  background: var(--bg-primary);
+  position: relative;
+}
+
+.container {
+  max-width: 1380px;
+  margin: 0 auto;
+}
+
+.sectionHeaderCenter {
+  text-align: center;
+  max-width: 820px;
+  margin: 0 auto 54px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.smallBadge {
+  display: inline-block;
+  font-size: 0.75rem;
+  letter-spacing: 0.16em;
+  color: var(--color-gold);
+  border: 1px solid rgba(212, 175, 55, 0.35);
+  padding: 6px 16px;
+  border-radius: var(--radius-full);
+  margin-bottom: 14px;
+  background: rgba(26, 30, 41, 0.6);
+}
+
+.sectionMainTitle {
+  font-family: var(--font-heading);
+  font-size: 2.5rem;
+  color: #FFFFFF;
+  margin-bottom: 14px;
+}
+
+.goldSpan {
+  color: var(--color-gold);
+  font-style: italic;
+}
+
+.sectionLeadText {
+  font-size: 1rem;
+  line-height: 1.7;
+  color: var(--text-secondary);
+}
+
+/* Costumes Grid */
+.costumeGrid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 28px;
+}
+
+.costumeDetailCard {
+  background: var(--bg-card);
+  border: var(--glass-border);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  backdrop-filter: var(--glass-blur);
+  transition: all var(--transition-normal);
+}
+
+.costumeDetailCard:hover {
+  transform: translateY(-6px);
+  border-color: var(--color-gold);
+  box-shadow: var(--shadow-luxury);
+}
+
+.cardImageContainer {
+  position: relative;
+  height: 260px;
+  overflow: hidden;
+}
+
+.cardImg {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform var(--transition-smooth);
+}
+
+.costumeDetailCard:hover .cardImg {
+  transform: scale(1.06);
+}
+
+.categoryPill {
+  position: absolute;
+  top: 14px;
+  left: 14px;
+  background: rgba(140, 29, 24, 0.85);
+  border: 1px solid var(--color-gold);
+  color: #FFFFFF;
+  font-size: 0.7rem;
+  font-weight: 700;
+  padding: 4px 12px;
+  border-radius: var(--radius-full);
+  backdrop-filter: blur(6px);
+}
+
+.dynastyPill {
+  position: absolute;
+  top: 14px;
+  right: 14px;
+  background: rgba(15, 17, 23, 0.85);
+  border: 1px solid rgba(212, 175, 55, 0.4);
+  color: var(--color-gold);
+  font-size: 0.68rem;
+  font-weight: 600;
+  padding: 4px 10px;
+  border-radius: var(--radius-full);
+  backdrop-filter: blur(6px);
+}
+
+.cardBody {
+  padding: 22px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  flex: 1;
+}
+
+.costumeNameTitle {
+  font-size: 1.3rem;
+  color: #FFFFFF;
+}
+
+.costumeSubtitle {
+  font-size: 0.82rem;
+  color: var(--color-gold);
+  font-weight: 500;
+}
+
+.costumeDescText {
+  font-size: 0.86rem;
+  color: var(--text-secondary);
+  line-height: 1.6;
+}
+
+.culturalBox {
+  background: rgba(26, 30, 41, 0.8);
+  border-left: 3px solid var(--color-gold);
+  padding: 10px 14px;
+  font-size: 0.82rem;
+  color: var(--text-muted);
+  line-height: 1.5;
+  border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+}
+
+.culturalBox strong {
+  color: var(--color-gold);
+}
+
+.cardFooterAction {
+  margin-top: auto;
+  padding-top: 12px;
+}
+
+/* Landmarks Grid */
+.landmarksGrid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 24px;
+}
+
+.landmarkCard {
+  background: var(--bg-card);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  transition: all var(--transition-normal);
+}
+
+.landmarkCard:hover {
+  transform: translateY(-4px);
+  border-color: var(--color-gold);
+  box-shadow: var(--shadow-gold);
+}
+
+.landmarkImgWrapper {
+  position: relative;
+  height: 220px;
+  overflow: hidden;
+}
+
+.landmarkImg {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform var(--transition-smooth);
+}
+
+.landmarkCard:hover .landmarkImg {
+  transform: scale(1.08);
+}
+
+.landmarkTag {
+  position: absolute;
+  bottom: 12px;
+  right: 12px;
+  background: rgba(15, 17, 23, 0.8);
+  border: 1px solid var(--color-gold);
+  color: var(--color-gold);
+  font-size: 0.72rem;
+  font-weight: 600;
+  padding: 4px 12px;
+  border-radius: var(--radius-full);
+  backdrop-filter: blur(6px);
+}
+
+.landmarkInfo {
+  padding: 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.landmarkTop {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+}
+
+.landmarkName {
+  font-size: 1.05rem;
+  color: #FFFFFF;
+}
+
+.landmarkLocation {
+  font-size: 0.76rem;
+  color: var(--color-gold);
+}
+
+.landmarkEra {
+  font-size: 0.76rem;
+  color: var(--text-muted);
+}
+
+.landmarkDesc {
+  font-size: 0.84rem;
+  color: var(--text-secondary);
+  line-height: 1.5;
+}

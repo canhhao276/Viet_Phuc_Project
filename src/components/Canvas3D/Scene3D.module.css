@@ -1,0 +1,108 @@
+.canvasContainer {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  min-height: 600px;
+  background: radial-gradient(circle at 50% 35%, #182030 0%, #0F1117 80%);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  border: var(--glass-border);
+  box-shadow: var(--shadow-luxury);
+}
+
+.canvasInner {
+  width: 100%;
+  height: 100%;
+}
+
+/* Floating 3D Toolbar */
+.floatingToolbar {
+  position: absolute;
+  top: 18px;
+  left: 20px;
+  right: 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  pointer-events: none;
+  z-index: 10;
+}
+
+.badge3D {
+  pointer-events: auto;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 14px;
+  background: rgba(15, 17, 23, 0.85);
+  border: 1px solid var(--color-gold);
+  border-radius: var(--radius-full);
+  color: var(--color-gold);
+  font-size: 0.8rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  backdrop-filter: var(--glass-blur);
+}
+
+.dotPulse {
+  width: 7px;
+  height: 7px;
+  background-color: #2E6F68;
+  border-radius: 50%;
+  box-shadow: 0 0 8px #2E6F68;
+  animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+  0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(46, 111, 104, 0.7); }
+  70% { transform: scale(1); box-shadow: 0 0 0 6px rgba(46, 111, 104, 0); }
+  100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(46, 111, 104, 0); }
+}
+
+.cameraControlsGroup {
+  pointer-events: auto;
+  display: flex;
+  gap: 6px;
+  background: rgba(18, 22, 32, 0.9);
+  border: 1px solid rgba(212, 175, 55, 0.3);
+  padding: 4px;
+  border-radius: var(--radius-full);
+  backdrop-filter: var(--glass-blur);
+}
+
+.camBtn {
+  padding: 6px 12px;
+  font-size: 0.78rem;
+  color: var(--text-secondary);
+  border-radius: var(--radius-full);
+  transition: all var(--transition-fast);
+}
+
+.camBtn:hover {
+  color: var(--color-gold);
+  background: rgba(212, 175, 55, 0.12);
+}
+
+.camBtnActive {
+  color: #12141A;
+  background: var(--color-gold);
+  font-weight: 600;
+}
+
+/* Bottom Hint */
+.bottomHint {
+  position: absolute;
+  bottom: 16px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.76rem;
+  color: var(--text-muted);
+  background: rgba(15, 17, 23, 0.7);
+  padding: 5px 14px;
+  border-radius: var(--radius-full);
+  pointer-events: none;
+  backdrop-filter: var(--glass-blur);
+}
