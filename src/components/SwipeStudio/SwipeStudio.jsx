@@ -11,15 +11,17 @@ import {
   Glasses, 
   Award,
   ChevronRight,
-  Info
+  Info,
+  Footprints
 } from 'lucide-react';
 import { 
   COSTUMES, 
   BOTTOMS, 
-  ACCESSORIES_TRADITIONAL, 
-  ACCESSORIES_GENZ,
-  CULTURAL_RULES 
+  FOOTWEAR, 
+  HEADWEAR
 } from '../../data/mockData';
+import { calculateDetailedHarmony } from '../../data/outfitRules';
+import { processNgheThanFeedback } from '../../data/ngheThanEngine';
 import styles from './SwipeStudio.module.css';
 
 export default function SwipeStudio({ 
@@ -27,45 +29,59 @@ export default function SwipeStudio({
   onFinishLook, 
   onTriggerWarning 
 }) {
-  // Current active step: 0 = Áo chính, 1 = Quần/Váy, 2 = Phụ kiện Cổ truyền, 3 = Phụ kiện Remix Gen Z
+  // Tabs cho Truyền thống / Hiện đại
+  const [activeTab, setActiveTab] = useState('traditional'); // 'traditional' | 'remix'
+
+  // Current active step: 0 = Áo, 1 = Quần/Váy, 2 = Giày dép, 3 = Mũ/Phụ kiện
   const [currentStep, setCurrentStep] = useState(0);
 
   // Selections
   const [selectedCostume, setSelectedCostume] = useState(COSTUMES[0]);
   const [selectedBottom, setSelectedBottom] = useState(BOTTOMS[0]);
-  const [selectedTradAcc, setSelectedTradAcc] = useState(ACCESSORIES_TRADITIONAL[0]);
-  const [selectedGenzAcc, setSelectedGenzAcc] = useState(ACCESSORIES_GENZ[0]);
+  const [selectedFootwear, setSelectedFootwear] = useState(FOOTWEAR[0]);
+  const [selectedHeadwear, setSelectedHeadwear] = useState(HEADWEAR[0]);
 
   // Card index tracking for Swipe deck in Step 0 (Costumes)
   const [costumeDeckIndex, setCostumeDeckIndex] = useState(0);
+  const filteredCostumes = COSTUMES.filter(c => c.type === activeTab);
 
-  // Check cultural rules whenever selection changes
-  const checkRules = (costume, bottom, genzAcc) => {
-    for (const rule of CULTURAL_RULES) {
-      if (rule.costumeId === costume.id) {
-        if (rule.prohibitedBottom && bottom && rule.prohibitedBottom === bottom.id) {
-          onTriggerWarning(rule);
-          return false;
-        }
-        if (rule.prohibitedGenz && genzAcc && rule.prohibitedGenz === genzAcc.id) {
-          if (!rule.triggerWhenOccasion || rule.triggerWhenOccasion === selectedOccasion.id) {
-            onTriggerWarning(rule);
-            return false;
-          }
-        }
-      }
+  // Reset deck index when switching tabs
+  React.useEffect(() => {
+    setCostumeDeckIndex(0);
+    if (filteredCostumes.length > 0 && currentStep === 0) {
+      setSelectedCostume(filteredCostumes[0]);
+    }
+  }, [activeTab, currentStep]);
+
+  // Check cultural rules using Data Member's Engine
+  const checkRules = (c, b, fw, hw) => {
+    const outfitData = {
+      costume: c || selectedCostume,
+      bottom: b || selectedBottom,
+      footwear: fw || selectedFootwear,
+      headwear: hw || selectedHeadwear,
+      occasion: selectedOccasion
+    };
+    
+    const harmony = calculateDetailedHarmony(outfitData);
+    const feedback = processNgheThanFeedback(outfitData, harmony.score);
+
+    if (feedback && feedback.severity !== 'praise') {
+      onTriggerWarning(feedback);
+      // Nếu là critical thì chặn không cho hoàn tất, warning/info thì cho qua
+      return feedback.severity !== 'critical';
     }
     return true;
   };
 
   // Handle Swipe Left (Reject / Next)
   const handleSwipeLeft = () => {
-    if (costumeDeckIndex < COSTUMES.length - 1) {
+    if (costumeDeckIndex < filteredCostumes.length - 1) {
       setCostumeDeckIndex(prev => prev + 1);
-      setSelectedCostume(COSTUMES[costumeDeckIndex + 1]);
+      setSelectedCostume(filteredCostumes[costumeDeckIndex + 1]);
     } else {
       setCostumeDeckIndex(0);
-      setSelectedCostume(COSTUMES[0]);
+      setSelectedCostume(filteredCostumes[0]);
     }
   };
 
@@ -75,30 +91,33 @@ export default function SwipeStudio({
     setCurrentStep(1);
   };
 
-  // Calculate harmony score
+  // Calculate real harmony score using advanced logic
   const calculateHarmony = () => {
-    let score = 95;
-    if (selectedOccasion.recommendedCostumes.includes(selectedCostume.id)) {
-      score += 4;
-    }
-    return Math.min(score, 100);
+    const harmony = calculateDetailedHarmony({
+      costume: selectedCostume,
+      bottom: selectedBottom,
+      footwear: selectedFootwear,
+      headwear: selectedHeadwear,
+      occasion: selectedOccasion
+    });
+    return harmony.score;
   };
 
   const handleCompleteLook = () => {
-    const isClean = checkRules(selectedCostume, selectedBottom, selectedGenzAcc);
+    const isClean = checkRules(selectedCostume, selectedBottom, selectedFootwear, selectedHeadwear);
     if (!isClean) return;
 
     onFinishLook({
       costume: selectedCostume,
       bottom: selectedBottom,
-      tradAcc: selectedTradAcc,
-      genzAcc: selectedGenzAcc,
+      footwear: selectedFootwear,
+      headwear: selectedHeadwear,
       occasion: selectedOccasion,
       harmonyScore: calculateHarmony()
     });
   };
 
-  const currentCostumeCard = COSTUMES[costumeDeckIndex];
+  const currentCostumeCard = filteredCostumes[costumeDeckIndex] || COSTUMES[0];
 
   return (
     <section id="studio" className={styles.studioSection}>
@@ -137,15 +156,31 @@ export default function SwipeStudio({
               className={`${styles.stepTab} ${currentStep === 2 ? styles.stepTabActive : ''}`}
               onClick={() => setCurrentStep(2)}
             >
-              <Compass size={16} />
-              <span>3. Phụ kiện Cổ truyền</span>
+              <Footprints size={16} />
+              <span>3. Giày Dép</span>
             </button>
             <button 
               className={`${styles.stepTab} ${currentStep === 3 ? styles.stepTabActive : ''}`}
               onClick={() => setCurrentStep(3)}
             >
               <Glasses size={16} />
-              <span>4. Remix Gen Z</span>
+              <span>4. Mũ / Phụ Kiện</span>
+            </button>
+          </div>
+
+          {/* Type Tabs Filter (Truyền thống vs Hiện đại) */}
+          <div style={{ display: 'flex', justifyContent: 'center', gap: '10px', marginTop: '15px' }}>
+            <button 
+              onClick={() => setActiveTab('traditional')}
+              style={{ padding: '8px 16px', borderRadius: '20px', border: '1px solid #D4AF37', background: activeTab === 'traditional' ? '#D4AF37' : 'transparent', color: activeTab === 'traditional' ? '#fff' : '#D4AF37', cursor: 'pointer', fontWeight: 'bold' }}
+            >
+              Truyền Thống
+            </button>
+            <button 
+              onClick={() => setActiveTab('remix')}
+              style={{ padding: '8px 16px', borderRadius: '20px', border: '1px solid #9E2A2B', background: activeTab === 'remix' ? '#9E2A2B' : 'transparent', color: activeTab === 'remix' ? '#fff' : '#9E2A2B', cursor: 'pointer', fontWeight: 'bold' }}
+            >
+              Hiện Đại (Remix)
             </button>
           </div>
         </div>
@@ -227,9 +262,9 @@ export default function SwipeStudio({
             {/* STEP 1: SELECT BOTTOMS */}
             {currentStep === 1 && (
               <div className={styles.gridSelection}>
-                <h4 className={styles.stepTitle}>Chọn Quần / Váy phối cùng {selectedCostume.name}</h4>
+                <h4 className={styles.stepTitle}>Chọn Quần / Váy ({activeTab === 'traditional' ? 'Truyền Thống' : 'Hiện Đại'})</h4>
                 <div className={styles.optionsList}>
-                  {BOTTOMS.map((bottom) => {
+                  {BOTTOMS.filter(b => b.type === activeTab).map((bottom) => {
                     const isSelected = selectedBottom.id === bottom.id;
                     return (
                       <div 
@@ -237,7 +272,7 @@ export default function SwipeStudio({
                         className={`${styles.optionCard} ${isSelected ? styles.optionCardActive : ''}`}
                         onClick={() => {
                           setSelectedBottom(bottom);
-                          checkRules(selectedCostume, bottom, selectedGenzAcc);
+                          checkRules(selectedCostume, bottom, selectedFootwear, selectedHeadwear);
                         }}
                       >
                         <div 
@@ -254,24 +289,27 @@ export default function SwipeStudio({
                   })}
                 </div>
                 <button className="btn btn-primary" onClick={() => setCurrentStep(2)}>
-                  <span>Tiếp tục: Phụ kiện Cổ truyền</span>
+                  <span>Tiếp tục: Giày Dép</span>
                   <ChevronRight size={18} />
                 </button>
               </div>
             )}
 
-            {/* STEP 2: SELECT TRADITIONAL ACCESSORIES */}
+            {/* STEP 2: SELECT FOOTWEAR */}
             {currentStep === 2 && (
               <div className={styles.gridSelection}>
-                <h4 className={styles.stepTitle}>Chọn Phụ kiện Truyền thống tôn nét quý phái</h4>
+                <h4 className={styles.stepTitle}>Chọn Giày Dép ({activeTab === 'traditional' ? 'Truyền Thống' : 'Hiện Đại'})</h4>
                 <div className={styles.optionsList}>
-                  {ACCESSORIES_TRADITIONAL.map((acc) => {
-                    const isSelected = selectedTradAcc.id === acc.id;
+                  {FOOTWEAR.filter(f => f.type === activeTab).map((acc) => {
+                    const isSelected = selectedFootwear.id === acc.id;
                     return (
                       <div 
                         key={acc.id}
                         className={`${styles.optionCard} ${isSelected ? styles.optionCardActive : ''}`}
-                        onClick={() => setSelectedTradAcc(acc)}
+                        onClick={() => {
+                          setSelectedFootwear(acc);
+                          checkRules(selectedCostume, selectedBottom, acc, selectedHeadwear);
+                        }}
                       >
                         <div className={styles.accBadge}>
                           <Sparkles size={20} />
@@ -286,26 +324,26 @@ export default function SwipeStudio({
                   })}
                 </div>
                 <button className="btn btn-primary" onClick={() => setCurrentStep(3)}>
-                  <span>Tiếp tục: Phụ kiện Remix Gen Z</span>
+                  <span>Tiếp tục: Mũ / Phụ Kiện</span>
                   <ChevronRight size={18} />
                 </button>
               </div>
             )}
 
-            {/* STEP 3: SELECT GEN Z REMIX ACCENTS */}
+            {/* STEP 3: SELECT HEADWEAR/ACCESSORIES */}
             {currentStep === 3 && (
               <div className={styles.gridSelection}>
-                <h4 className={styles.stepTitle}>Thêm Chất Gen Z • Tạo Điểm Nhấn Phá Cách</h4>
+                <h4 className={styles.stepTitle}>Thêm Điểm Nhấn Phụ Kiện ({activeTab === 'traditional' ? 'Truyền Thống' : 'Hiện Đại'})</h4>
                 <div className={styles.optionsList}>
-                  {ACCESSORIES_GENZ.map((acc) => {
-                    const isSelected = selectedGenzAcc.id === acc.id;
+                  {HEADWEAR.filter(h => h.type === activeTab).map((acc) => {
+                    const isSelected = selectedHeadwear.id === acc.id;
                     return (
                       <div 
                         key={acc.id}
                         className={`${styles.optionCard} ${isSelected ? styles.optionCardActive : ''}`}
                         onClick={() => {
-                          setSelectedGenzAcc(acc);
-                          checkRules(selectedCostume, selectedBottom, acc);
+                          setSelectedHeadwear(acc);
+                          checkRules(selectedCostume, selectedBottom, selectedFootwear, acc);
                         }}
                       >
                         <div className={styles.accBadgeGenz}>
@@ -358,12 +396,12 @@ export default function SwipeStudio({
                 <span className={styles.rowValue}>{selectedBottom.name}</span>
               </div>
               <div className={styles.breakdownRow}>
-                <span className={styles.rowLabel}>Cổ truyền:</span>
-                <span className={styles.rowValue}>{selectedTradAcc.name}</span>
+                <span className={styles.rowLabel}>Giày dép:</span>
+                <span className={styles.rowValue}>{selectedFootwear.name}</span>
               </div>
               <div className={styles.breakdownRow}>
-                <span className={styles.rowLabel}>Gen Z Remix:</span>
-                <span className={styles.rowValueBadge}>{selectedGenzAcc.name}</span>
+                <span className={styles.rowLabel}>Mũ/Phụ kiện:</span>
+                <span className={styles.rowValueBadge}>{selectedHeadwear.name}</span>
               </div>
             </div>
 

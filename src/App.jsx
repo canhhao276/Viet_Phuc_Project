@@ -45,7 +45,7 @@ export default function App() {
       costumeImg: look.costume.image,
       occasionName: look.occasion.name,
       palette: look.costume.colorScheme,
-      mixFormula: `${look.costume.name} + ${look.bottom.name} + ${look.tradAcc.name} + ${look.genzAcc.name}`,
+      mixFormula: `${look.costume.name} + ${look.bottom.name} + ${look.footwear.name} + ${look.headwear.name}`,
       harmonyScore: look.harmonyScore,
       storySnippet: look.costume.story
     };
