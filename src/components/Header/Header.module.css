@@ -1,50 +1,113 @@
-.headerWrapper {
+.header {
   position: sticky;
   top: 0;
   left: 0;
   width: 100%;
   z-index: 100;
-  background: rgba(15, 17, 23, 0.85);
-  backdrop-filter: var(--glass-blur);
-  -webkit-backdrop-filter: var(--glass-blur);
-  border-bottom: 1px solid rgba(212, 175, 55, 0.2);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.06);
+}
+
+/* Micro announcement banner */
+.topAnnounce {
+  background: #1A1615;
+  color: #ECE5DA;
+  padding: 6px 0;
+  font-size: 0.74rem;
+  letter-spacing: 0.05em;
+  border-bottom: 1px solid rgba(201, 151, 0, 0.3);
+}
+
+.announceContainer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.announceText {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-weight: 600;
+  color: #F4D35E;
+}
+
+.sparkleIcon {
+  font-size: 0.85rem;
+}
+
+.topMeta {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: #A8A199;
+}
+
+.dotSeparator {
+  color: var(--color-gold);
+}
+
+/* Main Navigation Bar */
+.mainNav {
+  background: #FFFFFF;
+  border-bottom: 1px solid #EBE4D8;
+  padding: 12px 0;
   transition: all var(--transition-normal);
 }
 
-.headerContainer {
-  max-width: 1440px;
-  margin: 0 auto;
-  padding: 14px 28px;
+.navContainer {
   display: flex;
   align-items: center;
   justify-content: space-between;
 }
 
-/* Logo Left */
-.logoLink {
+/* Red Seal Logo (Con Dấu Triện) */
+.brandGroup {
   display: flex;
   align-items: center;
   gap: 14px;
+  text-decoration: none;
+  color: inherit;
 }
 
-.logoBadge {
-  width: 42px;
-  height: 42px;
-  border-radius: 50%;
-  background: radial-gradient(circle, #8C1D18 0%, #4A0E0B 100%);
-  border: 1.5px solid var(--color-gold);
+.sealLogo {
+  width: 48px;
+  height: 48px;
+  border: 2.5px solid #A81C1C;
+  border-radius: 4px;
+  padding: 3px;
+  background: #FFFFFF;
   display: flex;
   align-items: center;
   justify-content: center;
-  box-shadow: 0 0 15px rgba(212, 175, 55, 0.35);
+  box-shadow: 0 2px 8px rgba(168, 28, 28, 0.2);
+  transition: transform var(--transition-bounce);
 }
 
-.logoMonogram {
-  font-family: var(--font-heading);
-  font-size: 1.25rem;
-  font-weight: 700;
-  color: var(--color-gold);
-  letter-spacing: 0.05em;
+.brandGroup:hover .sealLogo {
+  transform: rotate(-3deg) scale(1.05);
+}
+
+.sealInner {
+  width: 100%;
+  height: 100%;
+  border: 1px solid #A81C1C;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  color: #A81C1C;
+  font-family: var(--font-serif);
+  font-weight: 800;
+  font-size: 0.72rem;
+  line-height: 1.05;
+  letter-spacing: 0.08em;
+}
+
+.sealDivider {
+  width: 70%;
+  height: 1px;
+  background: #A81C1C;
+  margin: 1px 0;
 }
 
 .brandText {
@@ -52,86 +115,121 @@
   flex-direction: column;
 }
 
-.brandName {
-  font-family: var(--font-heading);
-  font-size: 1.15rem;
-  font-weight: 700;
-  color: var(--text-primary);
-  letter-spacing: 0.04em;
+.brandTitle {
+  font-family: var(--font-serif);
+  font-size: 1.45rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  color: #A81C1C;
+  line-height: 1.1;
 }
 
-.brandSub {
-  font-size: 0.68rem;
-  color: var(--color-gold);
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
+.brandTagline {
+  font-size: 0.7rem;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  color: #7D746D;
+  margin-top: 2px;
 }
 
-/* Nav Menu Right */
+/* Nav Menu */
 .navMenu {
   display: flex;
   align-items: center;
-  gap: 28px;
+  gap: 32px;
 }
 
 .navItem {
-  font-size: 0.88rem;
-  font-weight: 500;
-  color: var(--text-secondary);
+  text-decoration: none;
+  font-size: 0.84rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  color: #2D2726;
   position: relative;
-  padding: 6px 0;
+  padding: 8px 0;
   transition: color var(--transition-fast);
 }
 
-.navItem:hover {
-  color: var(--color-gold);
-}
-
-.navItemActive {
-  color: var(--color-gold);
-}
-
-.navItemActive::after {
+.navItem::after {
   content: '';
   position: absolute;
   bottom: 0;
   left: 0;
-  width: 100%;
+  width: 0;
   height: 2px;
-  background: var(--color-gold);
-  box-shadow: 0 0 8px var(--color-gold);
+  background: #A81C1C;
+  transition: width var(--transition-fast);
 }
 
-/* Lookbook Counter Badge Button */
-.lookbookNavBtn {
-  display: inline-flex;
+.navItem:hover {
+  color: #A81C1C;
+}
+
+.navItem:hover::after {
+  width: 100%;
+}
+
+/* Action Group */
+.actionGroup {
+  display: flex;
   align-items: center;
-  gap: 8px;
-  padding: 8px 18px;
-  background: rgba(26, 30, 41, 0.8);
-  border: 1px solid var(--color-gold);
+  gap: 14px;
+}
+
+.lookbookPill {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 16px;
   border-radius: var(--radius-full);
-  color: var(--color-gold);
-  font-size: 0.84rem;
-  font-weight: 600;
+  background: #FFF9E6;
+  border: 1px solid rgba(201, 151, 0, 0.4);
+  color: #8C6B00;
+  font-size: 0.82rem;
+  font-weight: 700;
+  text-decoration: none;
   transition: all var(--transition-fast);
 }
 
-.lookbookNavBtn:hover {
-  background: rgba(212, 175, 55, 0.15);
-  box-shadow: var(--shadow-gold);
+.lookbookPill:hover {
+  background: #FFF2CC;
   transform: translateY(-1px);
 }
 
-.lookbookCount {
-  display: inline-flex;
+.heartIcon {
+  color: #A81C1C;
+  fill: #A81C1C;
+}
+
+.ctaButton {
+  display: flex;
   align-items: center;
-  justify-content: center;
-  width: 20px;
-  height: 20px;
-  background: var(--color-gold);
-  color: #12141A;
-  border-radius: 50%;
-  font-size: 0.72rem;
-  font-weight: 800;
+  gap: 8px;
+  padding: 10px 22px;
+  border-radius: var(--radius-full);
+  background: linear-gradient(135deg, #B81D24, #8A0E14);
+  color: #FFFFFF;
+  border: none;
+  font-family: var(--font-sans);
+  font-size: 0.9rem;
+  font-weight: 700;
+  letter-spacing: 0.03em;
+  cursor: pointer;
+  box-shadow: 0 4px 14px rgba(184, 29, 36, 0.35);
+  transition: all var(--transition-fast);
+}
+
+.ctaButton:hover {
+  background: linear-gradient(135deg, #CF222A, #A8121A);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 18px rgba(184, 29, 36, 0.45);
+}
+
+@media (max-width: 990px) {
+  .navMenu {
+    display: none;
+  }
+  .topMeta {
+    display: none;
+  }
 }

@@ -1,0 +1,474 @@
+.studioSection {
+  padding: 60px 0 90px;
+}
+
+.headerBlock {
+  text-align: center;
+  max-width: 680px;
+  margin: 0 auto 40px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+}
+
+.title {
+  font-size: 2.8rem;
+  color: var(--color-red-son);
+}
+
+.subtitle {
+  color: var(--text-secondary);
+  font-size: 1.05rem;
+}
+
+.swipeTip {
+  display: block;
+  margin-top: 6px;
+  font-size: 0.9rem;
+  color: var(--color-red-son);
+}
+
+/* Stepper navigation */
+.stepperNav {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 10px;
+  margin-top: 20px;
+  background: var(--bg-card);
+  padding: 6px;
+  border-radius: var(--radius-full);
+  border: 1px solid var(--border-subtle);
+  box-shadow: var(--shadow-sm);
+}
+
+.stepTab {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 18px;
+  border-radius: var(--radius-full);
+  border: none;
+  background: transparent;
+  color: var(--text-secondary);
+  font-size: 0.88rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.stepTab:hover {
+  color: var(--color-red-son);
+}
+
+.stepTabActive {
+  background: var(--color-red-son);
+  color: var(--text-inverse);
+  box-shadow: 0 4px 12px rgba(158, 42, 43, 0.25);
+}
+
+/* Workspace layout */
+.workspaceGrid {
+  display: grid;
+  grid-template-columns: 1.35fr 0.65fr;
+  gap: 36px;
+  align-items: start;
+}
+
+/* Main interaction container */
+.interactionArea {
+  background: var(--bg-card);
+  border-radius: var(--radius-lg);
+  padding: 32px;
+  border: 1px solid var(--border-subtle);
+  box-shadow: var(--shadow-md);
+  min-height: 520px;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Tinder Swipe Deck */
+.swipeDeckContainer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 24px;
+}
+
+.swipeCard {
+  width: 100%;
+  max-width: 440px;
+  background: #FFFDF9;
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  border: 1px solid var(--border-gold);
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.08);
+  cursor: grab;
+  user-select: none;
+}
+
+.swipeCard:active {
+  cursor: grabbing;
+}
+
+.cardMedia {
+  position: relative;
+  height: 360px;
+  overflow: hidden;
+}
+
+.cardImg {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  pointer-events: none;
+}
+
+.mediaOverlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg, transparent 50%, rgba(26, 22, 21, 0.85) 100%);
+}
+
+.dynastyBadge {
+  position: absolute;
+  top: 14px;
+  left: 14px;
+  background: rgba(26, 22, 21, 0.7);
+  backdrop-filter: blur(8px);
+  color: var(--color-gold-light);
+  padding: 5px 12px;
+  border-radius: var(--radius-full);
+  font-size: 0.76rem;
+  font-weight: 600;
+  border: 1px solid rgba(244, 211, 94, 0.4);
+}
+
+.cardDetails {
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.cardCategory {
+  font-size: 0.78rem;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--color-red-son);
+  font-weight: 600;
+}
+
+.cardTitle {
+  font-size: 1.55rem;
+  color: var(--text-primary);
+  line-height: 1.2;
+}
+
+.cardStory {
+  font-size: 0.9rem;
+  color: var(--text-secondary);
+  line-height: 1.55;
+}
+
+.cardTags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 6px;
+}
+
+.metaTag {
+  font-size: 0.76rem;
+  padding: 3px 8px;
+  border-radius: var(--radius-sm);
+  background: rgba(201, 151, 0, 0.1);
+  color: #7D5D00;
+  font-weight: 600;
+}
+
+/* Swipe Actions Bar */
+.swipeActionsBar {
+  display: flex;
+  gap: 20px;
+  width: 100%;
+  max-width: 440px;
+  justify-content: center;
+}
+
+.actionBtn {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 14px;
+  border-radius: var(--radius-full);
+  font-weight: 600;
+  font-size: 0.95rem;
+  cursor: pointer;
+  border: none;
+  transition: all var(--transition-normal);
+}
+
+.actionBtnPass {
+  background: #F0ECE4;
+  color: var(--text-secondary);
+}
+
+.actionBtnPass:hover {
+  background: #E3DDD3;
+  color: var(--color-red-son);
+  transform: translateY(-2px);
+}
+
+.actionBtnPick {
+  background: linear-gradient(135deg, var(--color-red-son), var(--color-red-son-light));
+  color: var(--text-inverse);
+  box-shadow: 0 6px 18px rgba(158, 42, 43, 0.28);
+}
+
+.actionBtnPick:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 24px rgba(158, 42, 43, 0.38);
+}
+
+/* Grid selection styles for step 1, 2, 3 */
+.gridSelection {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.stepTitle {
+  font-size: 1.4rem;
+  color: var(--color-red-son);
+  font-family: var(--font-serif);
+}
+
+.optionsList {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 12px;
+}
+
+.optionCard {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 14px 18px;
+  border-radius: var(--radius-md);
+  border: 1.5px solid var(--border-subtle);
+  background: #FFFDF9;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.optionCard:hover {
+  border-color: var(--color-gold);
+  transform: translateX(4px);
+}
+
+.optionCardActive {
+  border-color: var(--color-red-son);
+  background: rgba(158, 42, 43, 0.04);
+}
+
+.colorSwatch {
+  width: 32px;
+  height: 32px;
+  border-radius: var(--radius-full);
+  border: 2px solid rgba(0, 0, 0, 0.1);
+  flex-shrink: 0;
+}
+
+.accBadge {
+  width: 40px;
+  height: 40px;
+  border-radius: var(--radius-md);
+  background: rgba(201, 151, 0, 0.12);
+  color: var(--color-gold);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.accBadgeGenz {
+  width: 40px;
+  height: 40px;
+  border-radius: var(--radius-md);
+  background: rgba(238, 150, 165, 0.2);
+  color: #B8324A;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.optionInfo {
+  flex: 1;
+}
+
+.optionInfo strong {
+  display: block;
+  font-size: 0.95rem;
+  color: var(--text-primary);
+}
+
+.optionInfo p {
+  font-size: 0.82rem;
+  color: var(--text-secondary);
+  margin-top: 2px;
+}
+
+.selectedIcon {
+  color: var(--color-red-son);
+}
+
+/* Right column: Live Outfit Summary */
+.outfitPreviewCard {
+  background: var(--bg-card);
+  border-radius: var(--radius-lg);
+  padding: 24px;
+  border: 1px solid var(--border-gold);
+  box-shadow: var(--shadow-md);
+  position: sticky;
+  top: 90px;
+}
+
+.previewHeader {
+  margin-bottom: 14px;
+}
+
+.previewEyebrow {
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  color: var(--color-gold);
+  text-transform: uppercase;
+}
+
+.previewTitle {
+  font-size: 1.3rem;
+  color: var(--text-primary);
+  margin-top: 2px;
+}
+
+.previewThumbnail {
+  position: relative;
+  height: 220px;
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  margin-bottom: 18px;
+}
+
+.thumbnailImg {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.previewOverlayBadge {
+  position: absolute;
+  bottom: 10px;
+  left: 10px;
+  background: rgba(26, 22, 21, 0.8);
+  backdrop-filter: blur(6px);
+  color: #ffffff;
+  padding: 4px 10px;
+  border-radius: var(--radius-sm);
+  font-size: 0.78rem;
+  font-weight: 600;
+}
+
+.breakdownList {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  border-top: 1px dashed var(--border-subtle);
+  border-bottom: 1px dashed var(--border-subtle);
+  padding: 14px 0;
+}
+
+.breakdownRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 0.88rem;
+}
+
+.rowLabel {
+  color: var(--text-muted);
+}
+
+.rowValue {
+  color: var(--text-primary);
+  font-weight: 500;
+}
+
+.rowValueBadge {
+  color: var(--color-red-son);
+  font-weight: 600;
+  background: rgba(158, 42, 43, 0.08);
+  padding: 2px 8px;
+  border-radius: var(--radius-sm);
+}
+
+.harmonyScoreBox {
+  margin-top: 16px;
+  background: #FAF7F2;
+  border-radius: var(--radius-md);
+  padding: 14px;
+  border: 1px solid var(--border-subtle);
+}
+
+.scoreRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 6px;
+}
+
+.scoreLabel {
+  font-size: 0.82rem;
+  color: var(--text-secondary);
+}
+
+.scorePercent {
+  font-size: 1.15rem;
+  color: var(--color-teal);
+}
+
+.scoreTrack {
+  height: 8px;
+  background: #E8E2D8;
+  border-radius: var(--radius-full);
+  overflow: hidden;
+}
+
+.scoreFill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--color-gold), var(--color-teal));
+  border-radius: var(--radius-full);
+  transition: width 0.4s ease;
+}
+
+.scoreNote {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  margin-top: 8px;
+  font-size: 0.74rem;
+  color: var(--text-muted);
+}
+
+@media (max-width: 960px) {
+  .workspaceGrid {
+    grid-template-columns: 1fr;
+  }
+  .outfitPreviewCard {
+    position: static;
+  }
+}

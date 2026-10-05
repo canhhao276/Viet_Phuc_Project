@@ -1,235 +1,307 @@
-.modalBackdrop {
+.backdrop {
   position: fixed;
   inset: 0;
-  background: rgba(10, 12, 18, 0.88);
-  backdrop-filter: blur(12px);
-  z-index: 1000;
+  background: rgba(26, 22, 21, 0.75);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  z-index: 250;
   display: flex;
   align-items: center;
   justify-content: center;
   padding: 24px;
+  overflow-y: auto;
 }
 
-.modalWindow {
+.modalContainer {
+  background: #FFFFFF;
+  border-radius: 28px;
   width: 100%;
-  max-width: 1080px;
-  max-height: 88vh;
-  background: #151924;
-  border: 1px solid var(--color-gold);
-  border-radius: var(--radius-lg);
-  box-shadow: 0 25px 60px rgba(0, 0, 0, 0.8), 0 0 35px rgba(212, 175, 55, 0.2);
+  max-width: 580px;
+  padding: 24px;
+  border: 1px solid var(--border-gold);
+  box-shadow: 0 30px 70px rgba(0, 0, 0, 0.3);
   display: flex;
   flex-direction: column;
-  overflow: hidden;
+  gap: 20px;
+  max-height: 92vh;
+  overflow-y: auto;
 }
 
-.modalHeader {
+.topBar {
   display: flex;
-  justify-content: space-between;
   align-items: center;
-  padding: 20px 28px;
-  background: rgba(22, 26, 38, 0.95);
-  border-bottom: 1px solid rgba(212, 175, 55, 0.2);
+  justify-content: space-between;
+  border-bottom: 1px solid var(--border-subtle);
+  padding-bottom: 12px;
 }
 
-.modalTitleGroup {
+.topStatus {
   display: flex;
-  flex-direction: column;
+  align-items: center;
+  gap: 10px;
 }
 
-.modalTitle {
-  font-family: var(--font-heading);
-  font-size: 1.5rem;
-  color: var(--color-gold);
+.confettiEmoji {
+  font-size: 1.8rem;
 }
 
-.modalSub {
-  font-size: 0.82rem;
-  color: var(--text-muted);
+.topStatus strong {
+  display: block;
+  font-size: 1.05rem;
+  color: var(--color-red-son);
+}
+
+.topStatus small {
+  color: var(--color-teal);
+  font-weight: 600;
 }
 
 .closeBtn {
-  font-size: 1.5rem;
-  color: var(--text-muted);
+  background: rgba(0, 0, 0, 0.05);
+  border: none;
   width: 36px;
   height: 36px;
-  border-radius: 50%;
+  border-radius: var(--radius-full);
   display: flex;
   align-items: center;
   justify-content: center;
+  color: var(--text-secondary);
+  cursor: pointer;
   transition: all var(--transition-fast);
 }
 
 .closeBtn:hover {
-  color: #FFFFFF;
-  background: rgba(255, 255, 255, 0.1);
+  background: rgba(158, 42, 43, 0.1);
+  color: var(--color-red-son);
 }
 
-.modalContent {
-  padding: 24px 28px;
-  overflow-y: auto;
+/* Magazine Editorial Card */
+.magazineWrapper {
+  display: flex;
+  justify-content: center;
+}
+
+.magazineCard {
+  width: 100%;
+  background: #FAF8F5;
+  border: 1px solid #E8E0D2;
+  border-radius: 20px;
+  padding: 20px;
   display: flex;
   flex-direction: column;
-  gap: 24px;
-}
-
-/* Compare Mode Section */
-.compareSection {
-  background: rgba(212, 175, 55, 0.05);
-  border: 1px solid rgba(212, 175, 55, 0.3);
-  border-radius: var(--radius-md);
-  padding: 18px;
-}
-
-.compareHeader {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 14px;
-}
-
-.compareTitle {
-  font-size: 1.1rem;
-  color: var(--color-gold);
-}
-
-.compareGrid {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
   gap: 16px;
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.05);
 }
 
-.compareCard {
-  background: rgba(26, 30, 41, 0.85);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  border-radius: var(--radius-sm);
-  padding: 16px;
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-}
-
-.compareCardActive {
-  border-color: var(--color-gold);
-}
-
-/* Gallery Grid */
-.galleryGrid {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 18px;
-}
-
-.emptyState {
-  text-align: center;
-  padding: 60px 20px;
-  color: var(--text-muted);
-}
-
-.emptyIcon {
-  font-size: 2.5rem;
-  margin-bottom: 12px;
-  display: block;
-}
-
-.lookItem {
-  background: rgba(26, 30, 41, 0.7);
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  border-radius: var(--radius-md);
-  overflow: hidden;
-  display: flex;
-  flex-direction: column;
-  transition: all var(--transition-normal);
-}
-
-.lookItem:hover {
-  border-color: var(--color-gold);
-  transform: translateY(-2px);
-  box-shadow: var(--shadow-gold);
-}
-
-.lookHeader {
-  padding: 12px 14px;
+.magHeader {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  background: rgba(15, 17, 23, 0.6);
+  border-bottom: 2px solid #231F20;
+  padding-bottom: 8px;
 }
 
-.lookTitle {
-  font-size: 1rem;
-  color: #FFFFFF;
+.magLogo {
+  font-family: var(--font-serif);
+  font-size: 1.35rem;
+  font-weight: 800;
+  letter-spacing: 0.12em;
+  color: var(--color-red-son);
+}
+
+.magMeta {
+  font-size: 0.68rem;
+  letter-spacing: 0.08em;
+  color: var(--text-muted);
   font-weight: 600;
 }
 
-.lookScore {
-  font-size: 0.78rem;
-  font-weight: 700;
-  color: var(--color-gold);
-  background: rgba(212, 175, 55, 0.15);
-  padding: 2px 8px;
-  border-radius: var(--radius-full);
+/* Photo Frame */
+.magPhotoFrame {
+  position: relative;
+  height: 320px;
+  border-radius: 12px;
+  overflow: hidden;
 }
 
-.lookBody {
-  padding: 14px;
+.magImg {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.magOverlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg, transparent 40%, rgba(26, 22, 21, 0.9) 100%);
+}
+
+.heritageStamp {
+  position: absolute;
+  top: 14px;
+  right: 14px;
+  width: 66px;
+  height: 66px;
+  border-radius: var(--radius-full);
+  border: 2px dashed #D4AF37;
   display: flex;
   flex-direction: column;
-  gap: 10px;
-  flex: 1;
+  align-items: center;
+  justify-content: center;
+  background: rgba(26, 22, 21, 0.7);
+  backdrop-filter: blur(4px);
+  color: #D4AF37;
+  transform: rotate(-10deg);
 }
 
-.lookDetailRow {
+.heritageStamp span {
+  font-size: 0.65rem;
+  font-weight: 800;
+}
+
+.heritageStamp small {
+  font-size: 0.52rem;
+  letter-spacing: 0.05em;
+}
+
+.photoCaption {
+  position: absolute;
+  bottom: 16px;
+  left: 16px;
+  right: 16px;
+  color: #ffffff;
+}
+
+.occasionPill {
+  display: inline-block;
+  background: rgba(201, 151, 0, 0.9);
+  color: #1A1615;
+  font-size: 0.72rem;
+  font-weight: 700;
+  padding: 3px 10px;
+  border-radius: var(--radius-full);
+  margin-bottom: 6px;
+}
+
+.costumeTitle {
+  font-size: 1.6rem;
+  line-height: 1.15;
+}
+
+.dynastyYear {
+  font-size: 0.8rem;
+  color: #E6E1DA;
+}
+
+/* Outfit Grid */
+.outfitGrid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+  background: #FFFFFF;
+  padding: 12px;
+  border-radius: 12px;
+  border: 1px solid #ECE4D6;
+}
+
+.gridItem {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.itemLabel {
+  font-size: 0.72rem;
+  color: var(--text-muted);
+  text-transform: uppercase;
+}
+
+.itemName {
+  font-size: 0.85rem;
+  color: var(--text-primary);
+  font-weight: 600;
+}
+
+.itemNameRemix {
+  font-size: 0.85rem;
+  color: var(--color-red-son);
+  font-weight: 700;
+}
+
+/* Flashcard Box */
+.flashcardBox {
+  background: #FFFDF9;
+  border-left: 3px solid var(--color-red-son);
+  padding: 12px 14px;
+  border-radius: 0 10px 10px 0;
+}
+
+.flashcardHeader {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--color-red-son);
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  margin-bottom: 4px;
+}
+
+.flashcardContent {
+  font-size: 0.84rem;
+  color: var(--text-secondary);
+  line-height: 1.5;
+}
+
+/* Mag Footer */
+.magFooter {
   display: flex;
   justify-content: space-between;
-  font-size: 0.8rem;
+  align-items: center;
+  padding-top: 8px;
+  border-top: 1px solid #ECE4D6;
 }
 
-.lookLabel {
-  color: var(--text-muted);
+.colorPalette {
+  display: flex;
+  align-items: center;
+  gap: 6px;
 }
 
-.lookVal {
-  color: var(--text-primary);
-  font-weight: 500;
-}
-
-.colorPreviewDot {
-  display: inline-block;
+.paletteDot {
   width: 14px;
   height: 14px;
-  border-radius: 50%;
-  border: 1px solid rgba(255, 255, 255, 0.4);
-  vertical-align: middle;
-  margin-left: 6px;
-}
-
-.lookActions {
-  padding: 10px 14px;
-  border-top: 1px solid rgba(255, 255, 255, 0.06);
-  display: flex;
-  justify-content: space-between;
-  gap: 8px;
-}
-
-.selectCompareBtn {
-  font-size: 0.78rem;
-  color: var(--color-gold);
-  border: 1px solid var(--color-gold);
-  padding: 6px 12px;
   border-radius: var(--radius-full);
+  border: 1px solid rgba(0, 0, 0, 0.15);
 }
 
-.selectCompareBtn:hover {
-  background: rgba(212, 175, 55, 0.2);
-}
-
-.deleteBtn {
-  font-size: 0.78rem;
+.paletteLabel {
+  font-size: 0.72rem;
   color: var(--text-muted);
-  padding: 6px 10px;
+  margin-left: 4px;
 }
 
-.deleteBtn:hover {
-  color: #FF6B6B;
+.brandSignature {
+  font-size: 0.72rem;
+  font-weight: 600;
+  color: var(--color-red-son);
+  letter-spacing: 0.05em;
+}
+
+/* Bottom Bar */
+.bottomBar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.bottomBar button {
+  flex: 1;
+  min-width: 130px;
+}
+
+@media (max-width: 600px) {
+  .outfitGrid {
+    grid-template-columns: 1fr;
+  }
 }

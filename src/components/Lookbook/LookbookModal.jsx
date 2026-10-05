@@ -1,164 +1,220 @@
-import React, { useState } from 'react';
+import React, { useRef, useEffect } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { 
+  X, 
+  Download, 
+  Share2, 
+  Sparkles, 
+  RotateCcw, 
+  Heart, 
+  BookmarkCheck,
+  CheckCircle,
+  Palette,
+  BookOpen
+} from 'lucide-react';
+import confetti from 'canvas-confetti';
+import html2canvas from 'html2canvas';
 import styles from './LookbookModal.module.css';
 
-/**
- * Modal Lookbook: Bộ sưu tập các bản phối đã lưu và chế độ so sánh 2 outfit
- */
-export default function LookbookModal({
-  isOpen,
-  onClose,
-  lookbookList = [],
-  onDeleteLook,
-  onApplyLook
+export default function LookbookModal({ 
+  lookData, 
+  onClose, 
+  onSaveToGallery, 
+  onRemix 
 }) {
-  const [compareItems, setCompareItems] = useState([]);
+  const magazineRef = useRef(null);
 
-  if (!isOpen) return null;
-
-  const toggleCompare = (item) => {
-    if (compareItems.some(i => i.id === item.id)) {
-      setCompareItems(compareItems.filter(i => i.id !== item.id));
-    } else {
-      if (compareItems.length < 2) {
-        setCompareItems([...compareItems, item]);
-      } else {
-        // Thay thế món thứ 2
-        setCompareItems([compareItems[0], item]);
+  useEffect(() => {
+    if (lookData) {
+      // Fire celebration confetti
+      try {
+        confetti({
+          particleCount: 80,
+          spread: 70,
+          origin: { y: 0.6 },
+          colors: ['#9E2A2B', '#C99700', '#F4D35E', '#1F4E46']
+        });
+      } catch (err) {
+        console.log(err);
       }
+    }
+  }, [lookData]);
+
+  if (!lookData) return null;
+
+  const { costume, bottom, tradAcc, genzAcc, occasion, harmonyScore } = lookData;
+
+  // Handle Export Lookbook as Image (html2canvas)
+  const handleDownloadImage = async () => {
+    if (!magazineRef.current) return;
+    try {
+      const canvas = await html2canvas(magazineRef.current, {
+        scale: 2,
+        useCORS: true,
+        backgroundColor: '#FAF8F5'
+      });
+      const link = document.createElement('a');
+      link.download = `viet-phuc-remix-${costume.id}.png`;
+      link.href = canvas.toDataURL('image/png');
+      link.click();
+    } catch (err) {
+      console.error('Failed to export lookbook image:', err);
+    }
+  };
+
+  const handleShare = () => {
+    if (navigator.share) {
+      navigator.share({
+        title: `Việt Phục Remix - ${costume.name}`,
+        text: `Xem bản phối Việt Phục phong cách Gen Z của mình cho dịp ${occasion.name}!`,
+        url: window.location.href
+      }).catch(() => {});
+    } else {
+      navigator.clipboard.writeText(window.location.href);
+      alert('Đã sao chép link Lookbook vào clipboard!');
     }
   };
 
   return (
-    <div className={styles.modalBackdrop} onClick={onClose}>
-      <div className={styles.modalWindow} onClick={(e) => e.stopPropagation()}>
-        {/* Header */}
-        <div className={styles.modalHeader}>
-          <div className={styles.modalTitleGroup}>
-            <h3 className={styles.modalTitle}>Bộ Sưu Tập Lookbook Cổ Phục</h3>
-            <span className={styles.modalSub}>
-              Lưu trữ những bản phối di sản và so sánh trực quan đa góc nhìn
-            </span>
+    <AnimatePresence>
+      <div className={styles.backdrop} onClick={onClose}>
+        <motion.div 
+          className={styles.modalContainer}
+          initial={{ scale: 0.9, opacity: 0, y: 20 }}
+          animate={{ scale: 1, opacity: 1, y: 0 }}
+          exit={{ scale: 0.9, opacity: 0, y: 20 }}
+          transition={{ type: 'spring', damping: 25, stiffness: 300 }}
+          onClick={(e) => e.stopPropagation()}
+        >
+          {/* Header Action bar */}
+          <div className={styles.topBar}>
+            <div className={styles.topStatus}>
+              <span className={styles.confettiEmoji}>🎉</span>
+              <div>
+                <strong>Bản Phối Hoàn Thiện!</strong>
+                <small>Điểm hài hòa văn hóa: {harmonyScore}%</small>
+              </div>
+            </div>
+
+            <button className={styles.closeBtn} onClick={onClose}>
+              <X size={20} />
+            </button>
           </div>
-          <button className={styles.closeBtn} onClick={onClose}>✕</button>
-        </div>
 
-        {/* Content */}
-        <div className={styles.modalContent}>
-          {/* CHẾ ĐỘ SO SÁNH NẾU ĐÃ CHỌN 2 BỘ */}
-          {compareItems.length === 2 && (
-            <div className={styles.compareSection}>
-              <div className={styles.compareHeader}>
-                <h4 className={styles.compareTitle}>⚖️ So Sánh 2 Phương Án Phối Đồ</h4>
-                <button
-                  className={styles.deleteBtn}
-                  onClick={() => setCompareItems([])}
-                >
-                  Xóa so sánh
-                </button>
+          {/* Editorial Magazine Lookbook Canvas (Target for html2canvas) */}
+          <div className={styles.magazineWrapper}>
+            <div ref={magazineRef} className={styles.magazineCard}>
+              
+              {/* Editorial Header */}
+              <div className={styles.magHeader}>
+                <div className={styles.magLogo}>VIỆT PHỤC REMIX</div>
+                <div className={styles.magMeta}>ISSUE 2026 • GEN Z HERITAGE EDITION</div>
               </div>
 
-              <div className={styles.compareGrid}>
-                {compareItems.map((item, idx) => (
-                  <div key={item.id} className={`${styles.compareCard} ${styles.compareCardActive}`}>
-                    <span className={styles.lookScore}>Phương án {idx + 1} • Điểm: {item.suitabilityScore}/100</span>
-                    <h4 style={{ color: '#D4AF37', margin: '4px 0' }}>{item.outfitName}</h4>
-                    <p style={{ fontSize: '0.8rem', color: '#BFC3CC' }}>{item.costumeName}</p>
-                    <p style={{ fontSize: '0.78rem', color: '#838896' }}>Dịp: {item.occasionName}</p>
-                    <div style={{ fontSize: '0.78rem', marginTop: '6px' }}>
-                      <strong>Màu chính: </strong>
-                      <span
-                        className={styles.colorPreviewDot}
-                        style={{ backgroundColor: item.costumeColor }}
-                      />
-                    </div>
-                    <p style={{ fontSize: '0.78rem', color: '#D2D5DD', marginTop: '6px', lineHeight: 1.4 }}>
-                      {item.culturalExplanation?.slice(0, 140)}...
-                    </p>
-                  </div>
-                ))}
+              {/* Main Photo Showcase */}
+              <div className={styles.magPhotoFrame}>
+                <img 
+                  src={costume.image} 
+                  alt={costume.name} 
+                  className={styles.magImg}
+                />
+                <div className={styles.magOverlay}></div>
+                
+                {/* Floating Stamp */}
+                <div className={styles.heritageStamp}>
+                  <span>NGHÊ THẦN</span>
+                  <small>BẢO CHỨNG</small>
+                </div>
+
+                <div className={styles.photoCaption}>
+                  <span className={styles.occasionPill}>{occasion.name}</span>
+                  <h2 className={styles.costumeTitle}>{costume.name}</h2>
+                  <p className={styles.dynastyYear}>{costume.dynasty}</p>
+                </div>
               </div>
+
+              {/* Outfit Breakdown Section */}
+              <div className={styles.outfitGrid}>
+                <div className={styles.gridItem}>
+                  <span className={styles.itemLabel}>Lớp trong / Quần</span>
+                  <strong className={styles.itemName}>{bottom.name}</strong>
+                </div>
+                <div className={styles.gridItem}>
+                  <span className={styles.itemLabel}>Phụ kiện Cổ truyền</span>
+                  <strong className={styles.itemName}>{tradAcc.name}</strong>
+                </div>
+                <div className={styles.gridItem}>
+                  <span className={styles.itemLabel}>Điểm nhấn Gen Z</span>
+                  <strong className={styles.itemNameRemix}>{genzAcc.name}</strong>
+                </div>
+              </div>
+
+              {/* Cultural Flashcard Story Box */}
+              <div className={styles.flashcardBox}>
+                <div className={styles.flashcardHeader}>
+                  <BookOpen size={16} />
+                  <span>Ý NGHĨA VĂN HÓA & NGUỒN GỐC</span>
+                </div>
+                <p className={styles.flashcardContent}>
+                  {costume.story}
+                </p>
+              </div>
+
+              {/* Magazine Footer */}
+              <div className={styles.magFooter}>
+                <div className={styles.colorPalette}>
+                  {costume.colorScheme.map((c, i) => (
+                    <span 
+                      key={i} 
+                      className={styles.paletteDot} 
+                      style={{ backgroundColor: c }}
+                      title={`Màu ${c}`}
+                    />
+                  ))}
+                  <span className={styles.paletteLabel}>Hệ màu di sản</span>
+                </div>
+                <div className={styles.brandSignature}>
+                  vietphuc-remix.vn
+                </div>
+              </div>
+
             </div>
-          )}
+          </div>
 
-          {/* DANH SÁCH TẤT CẢ LOOK ĐÃ LƯU */}
-          {lookbookList.length === 0 ? (
-            <div className={styles.emptyState}>
-              <span className={styles.emptyIcon}>👘</span>
-              <h4>Chưa có trang phục nào trong Lookbook</h4>
-              <p style={{ fontSize: '0.84rem', marginTop: '6px' }}>
-                Hãy qua tab "AI Stylist" và bấm "Lưu vào Lookbook" để xây dựng bộ sưu tập của riêng bạn.
-              </p>
-            </div>
-          ) : (
-            <div className={styles.galleryGrid}>
-              {lookbookList.map((item) => {
-                const isComparing = compareItems.some(i => i.id === item.id);
-                return (
-                  <div key={item.id} className={styles.lookItem}>
-                    <div className={styles.lookHeader}>
-                      <span className={styles.lookTitle}>{item.outfitName}</span>
-                      <span className={styles.lookScore}>{item.suitabilityScore} ĐIỂM</span>
-                    </div>
+          {/* Bottom Action Buttons */}
+          <div className={styles.bottomBar}>
+            <button className="btn btn-outline" onClick={handleDownloadImage}>
+              <Download size={18} />
+              <span>Tải ảnh bìa lookbook</span>
+            </button>
+            <button className="btn btn-outline" onClick={handleShare}>
+              <Share2 size={18} />
+              <span>Chia sẻ</span>
+            </button>
+            <button 
+              className="btn btn-primary" 
+              onClick={() => {
+                onSaveToGallery(lookData);
+                onClose();
+              }}
+            >
+              <BookmarkCheck size={18} />
+              <span>Lưu vào Lookbook Chuyền Tay</span>
+            </button>
+            <button 
+              className="btn btn-gold" 
+              onClick={() => {
+                onRemix(lookData);
+                onClose();
+              }}
+            >
+              <RotateCcw size={18} />
+              <span>Remix lại look này</span>
+            </button>
+          </div>
 
-                    <div className={styles.lookBody}>
-                      <div className={styles.lookDetailRow}>
-                        <span className={styles.lookLabel}>Cổ phục:</span>
-                        <span className={styles.lookVal}>{item.costumeName}</span>
-                      </div>
-                      <div className={styles.lookDetailRow}>
-                        <span className={styles.lookLabel}>Bối cảnh:</span>
-                        <span className={styles.lookVal}>{item.occasionName}</span>
-                      </div>
-                      <div className={styles.lookDetailRow}>
-                        <span className={styles.lookLabel}>Màu áo:</span>
-                        <span className={styles.lookVal}>
-                          <span
-                            className={styles.colorPreviewDot}
-                            style={{ backgroundColor: item.costumeColor }}
-                          />
-                        </span>
-                      </div>
-                      <div className={styles.lookDetailRow}>
-                        <span className={styles.lookLabel}>Phụ kiện:</span>
-                        <span className={styles.lookVal}>
-                          {item.accessories?.length > 0 ? `${item.accessories.length} món` : 'Cơ bản'}
-                        </span>
-                      </div>
-                    </div>
-
-                    <div className={styles.lookActions}>
-                      <button
-                        className={styles.selectCompareBtn}
-                        onClick={() => toggleCompare(item)}
-                      >
-                        {isComparing ? '✓ Đang so sánh' : '⚖ So sánh'}
-                      </button>
-
-                      <button
-                        className={styles.selectCompareBtn}
-                        style={{ color: '#2E6F68', borderColor: '#2E6F68' }}
-                        onClick={() => {
-                          onApplyLook(item);
-                          onClose();
-                        }}
-                      >
-                        Thử lên 3D
-                      </button>
-
-                      <button
-                        className={styles.deleteBtn}
-                        onClick={() => onDeleteLook(item.id)}
-                      >
-                        Xóa
-                      </button>
-                    </div>
-                  </div>
-                );
-              })}
-            </div>
-          )}
-        </div>
+        </motion.div>
       </div>
-    </div>
+    </AnimatePresence>
   );
 }

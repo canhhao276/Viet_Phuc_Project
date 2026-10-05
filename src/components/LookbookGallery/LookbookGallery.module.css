@@ -1,0 +1,242 @@
+.section {
+  padding: 80px 0 100px;
+  background: rgba(255, 255, 255, 0.4);
+  border-top: 1px solid var(--border-subtle);
+}
+
+.headerBlock {
+  text-align: center;
+  max-width: 680px;
+  margin: 0 auto 40px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+}
+
+.title {
+  font-size: 2.8rem;
+  color: var(--color-red-son);
+}
+
+.subtitle {
+  color: var(--text-secondary);
+  font-size: 1.05rem;
+}
+
+.filterPills {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  justify-content: center;
+  margin-top: 12px;
+}
+
+.filterBtn {
+  background: var(--bg-card);
+  border: 1px solid var(--border-subtle);
+  color: var(--text-secondary);
+  padding: 8px 18px;
+  border-radius: var(--radius-full);
+  font-size: 0.86rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.filterBtn:hover {
+  border-color: var(--color-gold);
+  color: var(--color-red-son);
+}
+
+.filterBtnActive {
+  background: var(--color-red-son);
+  color: #FFFFFF;
+  border-color: var(--color-red-son);
+  box-shadow: 0 4px 12px rgba(158, 42, 43, 0.25);
+}
+
+/* Gallery Grid */
+.galleryGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: 28px;
+}
+
+.lookCard {
+  background: var(--bg-card);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  border: 1px solid var(--border-subtle);
+  box-shadow: var(--shadow-sm);
+  display: flex;
+  flex-direction: column;
+  transition: all var(--transition-normal);
+}
+
+.lookCard:hover {
+  transform: translateY(-6px);
+  border-color: var(--color-gold);
+  box-shadow: var(--shadow-md);
+}
+
+.mediaBox {
+  position: relative;
+  height: 280px;
+  overflow: hidden;
+}
+
+.lookImg {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.5s ease;
+}
+
+.lookCard:hover .lookImg {
+  transform: scale(1.05);
+}
+
+.mediaOverlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg, transparent 40%, rgba(26, 22, 21, 0.8) 100%);
+}
+
+.occasionBadge {
+  position: absolute;
+  top: 14px;
+  left: 14px;
+  background: rgba(26, 22, 21, 0.7);
+  backdrop-filter: blur(6px);
+  color: var(--color-gold-light);
+  font-size: 0.74rem;
+  font-weight: 600;
+  padding: 4px 12px;
+  border-radius: var(--radius-full);
+  border: 1px solid rgba(244, 211, 94, 0.3);
+}
+
+.mediaBottom {
+  position: absolute;
+  bottom: 12px;
+  left: 14px;
+  right: 14px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.paletteDots {
+  display: flex;
+  gap: 5px;
+}
+
+.dot {
+  width: 12px;
+  height: 12px;
+  border-radius: var(--radius-full);
+  border: 1px solid rgba(255, 255, 255, 0.6);
+}
+
+.scoreBadge {
+  background: rgba(31, 78, 70, 0.85);
+  backdrop-filter: blur(4px);
+  color: #FFFFFF;
+  font-size: 0.72rem;
+  font-weight: 700;
+  padding: 3px 8px;
+  border-radius: var(--radius-sm);
+}
+
+/* Card Body */
+.lookBody {
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  flex: 1;
+}
+
+.creatorRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.creatorName {
+  font-size: 0.82rem;
+  color: var(--color-red-son);
+  font-weight: 600;
+}
+
+.statsRow {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.likeBtn {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  background: transparent;
+  border: none;
+  font-size: 0.82rem;
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.likeBtn:hover .likeIcon {
+  color: var(--color-red-son);
+  fill: var(--color-red-son);
+}
+
+.likeIcon {
+  color: var(--text-muted);
+}
+
+.remixStat {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 0.82rem;
+  color: var(--text-muted);
+}
+
+.lookTitle {
+  font-size: 1.25rem;
+  color: var(--text-primary);
+  line-height: 1.25;
+}
+
+.costumeName {
+  font-size: 0.86rem;
+  color: var(--text-secondary);
+  font-weight: 500;
+}
+
+.formulaBox {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  background: #FAF7F2;
+  padding: 8px 12px;
+  border-radius: 8px;
+  font-size: 0.8rem;
+  color: var(--text-secondary);
+  line-height: 1.4;
+  margin-top: 4px;
+}
+
+.formulaIcon {
+  color: var(--color-gold);
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+
+.cardActions {
+  margin-top: auto;
+  padding-top: 12px;
+}

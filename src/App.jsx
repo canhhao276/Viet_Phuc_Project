@@ -1,120 +1,128 @@
 import React, { useState } from 'react';
 import Header from './components/Header/Header';
 import HeroSection from './components/HeroSection/HeroSection';
-import StylistStudio from './components/StylistStudio/StylistStudio';
-import CostumeCatalogSection from './components/Showcase/CostumeCatalogSection';
-import LandmarksGallerySection from './components/Showcase/LandmarksGallerySection';
+import ContextSelector from './components/ContextSelector/ContextSelector';
+import SwipeStudio from './components/SwipeStudio/SwipeStudio';
+import NgheThanModal from './components/NgheThanMascot/NgheThanModal';
 import LookbookModal from './components/Lookbook/LookbookModal';
-import WarningModal from './components/CulturalWarning/WarningModal';
+import LookbookGallery from './components/LookbookGallery/LookbookGallery';
 import Footer from './components/Footer/Footer';
-import { useStylistState } from './hooks/useStylistState';
+import { OCCASIONS, INITIAL_LOOKBOOKS } from './data/mockData';
 
 export default function App() {
-  const [activeSection, setActiveSection] = useState('hero');
+  // Active styling context (Occasion)
+  const [selectedOccasion, setSelectedOccasion] = useState(OCCASIONS[0]);
 
-  const {
-    bodyMeasurements,
-    handleMeasurementChange,
-    handleResetBodyDefaults,
-    selectedCostume,
-    handleSelectCostume,
-    selectedColor,
-    setSelectedColor,
-    selectedOccasion,
-    setSelectedOccasion,
-    selectedAccessories,
-    handleToggleAccessory,
-    isAnalyzing,
-    aiResult,
-    triggerAIAnalysis,
-    lookbookList,
-    handleSaveToLookbook,
-    isCurrentSaved,
-    isLookbookOpen,
-    setIsLookbookOpen,
-    handleDeleteLook,
-    handleApplyLook,
-    isWarningModalOpen,
-    setIsWarningModalOpen
-  } = useStylistState();
+  // Gallery of Lookbooks ("Lookbook Chuyền Tay")
+  const [lookbooks, setLookbooks] = useState(INITIAL_LOOKBOOKS);
 
-  const handleNavigate = (sectionId) => {
-    setActiveSection(sectionId);
-    const element = document.getElementById(sectionId);
-    if (element) {
-      element.scrollIntoView({ behavior: 'smooth' });
+  // Modal states
+  const [activeWarningRule, setActiveWarningRule] = useState(null);
+  const [activeLookModal, setActiveLookModal] = useState(null);
+
+  // Smooth scroll helper
+  const scrollTo = (id) => {
+    const el = document.getElementById(id);
+    if (el) {
+      el.scrollIntoView({ behavior: 'smooth' });
     }
   };
 
-  const handleSelectCostumeFromCatalog = (costumeId) => {
-    handleSelectCostume(costumeId);
-    handleNavigate('stylist');
+  // Callback when outfit is completed
+  const handleFinishLook = (completedLook) => {
+    setActiveLookModal(completedLook);
+  };
+
+  // Save lookbook to community gallery
+  const handleSaveToGallery = (look) => {
+    const newEntry = {
+      id: `lb-${Date.now()}`,
+      title: `${look.costume.name} - ${look.occasion.name}`,
+      creator: 'Bạn (Gen Z Designer)',
+      likes: 1,
+      remixes: 0,
+      costumeName: look.costume.name,
+      costumeImg: look.costume.image,
+      occasionName: look.occasion.name,
+      palette: look.costume.colorScheme,
+      mixFormula: `${look.costume.name} + ${look.bottom.name} + ${look.tradAcc.name} + ${look.genzAcc.name}`,
+      harmonyScore: look.harmonyScore,
+      storySnippet: look.costume.story
+    };
+
+    setLookbooks(prev => [newEntry, ...prev]);
+    alert('✨ Tuyệt vời! Bộ phối của bạn đã được lưu vào Lookbook Chuyền Tay của cộng đồng!');
+  };
+
+  // Remix a lookbook from community
+  const handleRemixLook = (lookItem) => {
+    // Find matching occasion
+    const matchOccasion = OCCASIONS.find(o => o.name === lookItem.occasionName) || OCCASIONS[0];
+    setSelectedOccasion(matchOccasion);
+    scrollTo('studio');
+  };
+
+  // Like a lookbook
+  const handleLikeLook = (id) => {
+    setLookbooks(prev => prev.map(item => {
+      if (item.id === id) {
+        return { ...item, likes: item.likes + 1 };
+      }
+      return item;
+    }));
   };
 
   return (
-    <div className="heritage-app">
-      {/* Lớp hoa văn di sản nền mờ ảo */}
-      <div className="heritage-pattern-overlay" />
-
-      {/* Thanh Header bảo tàng số */}
-      <Header
-        activeSection={activeSection}
-        onNavigate={handleNavigate}
-        lookbookCount={lookbookList.length}
-        onOpenLookbook={() => setIsLookbookOpen(true)}
+    <div className="app-layout">
+      {/* 1. Header Navigation */}
+      <Header 
+        onStartStyling={() => scrollTo('studio')}
+        lookbookCount={lookbooks.length}
       />
 
-      {/* 1. Hero Section Panorama Hoàng Hôn Cố Đô */}
-      <HeroSection
-        onStartStylist={() => handleNavigate('stylist')}
-        onExploreCostumes={() => handleNavigate('costumes')}
+      {/* 2. Hero Section */}
+      <HeroSection 
+        onStartStyling={() => scrollTo('studio')}
+        onExploreLookbooks={() => scrollTo('lookbook-community')}
       />
 
-      {/* 2. Interactive 3D Heritage Studio (Avatar 360° + Bảng điều khiển) */}
-      <StylistStudio
-        bodyMeasurements={bodyMeasurements}
-        onMeasurementChange={handleMeasurementChange}
-        onResetBodyDefaults={handleResetBodyDefaults}
-        selectedCostume={selectedCostume}
-        onSelectCostume={handleSelectCostume}
-        selectedColor={selectedColor}
-        onSelectColor={setSelectedColor}
+      {/* 3. Context & Occasion Selector */}
+      <ContextSelector 
         selectedOccasion={selectedOccasion}
-        onSelectOccasion={setSelectedOccasion}
-        selectedAccessories={selectedAccessories}
-        onToggleAccessory={handleToggleAccessory}
-        isAnalyzing={isAnalyzing}
-        aiResult={aiResult}
-        onTriggerAI={triggerAIAnalysis}
-        onSaveToLookbook={handleSaveToLookbook}
-        isSaved={isCurrentSaved}
-        onOpenWarningModal={() => setIsWarningModalOpen(true)}
+        onSelectOccasion={(occ) => {
+          setSelectedOccasion(occ);
+          scrollTo('studio');
+        }}
       />
 
-      {/* 3. Bộ sưu tập Kho tàng Cổ phục Triều Nguyễn */}
-      <CostumeCatalogSection onSelectFor3D={handleSelectCostumeFromCatalog} />
+      {/* 4. Core Swipe Studio (Tinder-style outfit composer) */}
+      <SwipeStudio 
+        selectedOccasion={selectedOccasion}
+        onFinishLook={handleFinishLook}
+        onTriggerWarning={(rule) => setActiveWarningRule(rule)}
+      />
 
-      {/* 4. Thư viện Danh thắng & Di tích Cố Đô thực tế */}
-      <LandmarksGallerySection />
+      {/* 5. Community Lookbook Board ("Chuyền Tay") */}
+      <LookbookGallery 
+        lookbooks={lookbooks}
+        onRemixLook={handleRemixLook}
+        onLikeLook={handleLikeLook}
+      />
 
-      {/* 5. Footer Bảo tàng số */}
+      {/* 6. Footer & Credits */}
       <Footer />
 
-      {/* Modal Lookbook & So sánh */}
-      <LookbookModal
-        isOpen={isLookbookOpen}
-        onClose={() => setIsLookbookOpen(false)}
-        lookbookList={lookbookList}
-        onDeleteLook={handleDeleteLook}
-        onApplyLook={handleApplyLook}
+      {/* Modals & Overlays */}
+      <NgheThanModal 
+        warningRule={activeWarningRule}
+        onClose={() => setActiveWarningRule(null)}
       />
 
-      {/* Modal Cảnh báo sai lệch văn hóa */}
-      <WarningModal
-        isOpen={isWarningModalOpen}
-        onClose={() => setIsWarningModalOpen(false)}
-        warnings={aiResult?.warnings || []}
-        suggestions={aiResult?.suggestions || []}
+      <LookbookModal 
+        lookData={activeLookModal}
+        onClose={() => setActiveLookModal(null)}
+        onSaveToGallery={handleSaveToGallery}
+        onRemix={handleRemixLook}
       />
     </div>
   );
