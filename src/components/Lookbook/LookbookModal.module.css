@@ -119,8 +119,9 @@
 /* Photo Frame */
 .magPhotoFrame {
   position: relative;
-  height: 320px;
-  border-radius: 0;
+  width: 100%;
+  aspect-ratio: 3 / 4;
+  border-radius: var(--radius-lg);
   overflow: hidden;
 }
 

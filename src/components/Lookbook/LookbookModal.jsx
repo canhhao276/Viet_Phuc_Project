@@ -1,4 +1,4 @@
-import React, { useRef, useEffect } from 'react';
+import React, { useRef, useEffect, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
   X, 
@@ -14,6 +14,7 @@ import {
 } from 'lucide-react';
 import confetti from 'canvas-confetti';
 import html2canvas from 'html2canvas';
+import GeminiService from '../../data/geminiService';
 import styles from './LookbookModal.module.css';
 
 export default function LookbookModal({ 
@@ -23,9 +24,36 @@ export default function LookbookModal({
   onRemix 
 }) {
   const magazineRef = useRef(null);
+  const [generatedImageUrl, setGeneratedImageUrl] = useState(null);
+  const [isGenerating, setIsGenerating] = useState(false);
 
   useEffect(() => {
     if (lookData) {
+      // Reset state & trigger AI Gen
+      setGeneratedImageUrl(null);
+      setIsGenerating(true);
+
+      const geminiKey = import.meta.env.VITE_GEMINI_API_KEY;
+      const hfKey = import.meta.env.VITE_HF_API_KEY;
+
+      GeminiService.generateOutfitImage({
+        costumeName: lookData.costume.name,
+        bottomName: lookData.bottom.name,
+        tradAccName: lookData.footwear.name,
+        genzAccName: lookData.headwear.name,
+        occasionName: lookData.occasion.name,
+        colorPalette: lookData.costume.colorScheme
+      }, geminiKey, hfKey)
+      .then(res => {
+        // Gắn URL mới vào state, nhưng chưa tắt loading.
+        // Tắt loading sẽ do thẻ <img> đảm nhận (onLoad/onError).
+        setGeneratedImageUrl(res.imageUrl);
+      })
+      .catch(err => {
+        console.error("AI Gen Failed:", err);
+        setIsGenerating(false);
+      });
+
       // Fire celebration confetti
       try {
         confetti({
@@ -42,7 +70,7 @@ export default function LookbookModal({
 
   if (!lookData) return null;
 
-  const { costume, bottom, tradAcc, genzAcc, occasion, harmonyScore } = lookData;
+  const { costume, bottom, footwear, headwear, occasion, harmonyScore } = lookData;
 
   // Handle Export Lookbook as Image (html2canvas)
   const handleDownloadImage = async () => {
@@ -113,11 +141,32 @@ export default function LookbookModal({
 
               {/* Main Photo Showcase */}
               <div className={styles.magPhotoFrame}>
+                {isGenerating && (
+                  <div className={styles.aiLoadingPlaceholder} style={{ position: 'absolute', top: 0, left: 0, zIndex: 10, width: '100%', height: '100%', minHeight: '400px', backgroundColor: '#e2d5c3', display: 'flex', alignItems: 'center', justifyContent: 'center', flexDirection: 'column' }}>
+                    <span className={styles.spinnerEmoji} style={{ fontSize: '2rem', animation: 'spin 2s linear infinite' }}>🎨</span>
+                    <p style={{ marginTop: '10px', fontWeight: 'bold', color: '#582F0E' }}>Nghê Thần đang vẽ ảnh AI...</p>
+                    <small style={{ marginTop: '5px', color: '#888', textAlign: 'center', padding: '0 10px' }}>
+                      (Nếu dùng server miễn phí có thể mất tới 30 giây, vui lòng đợi...)
+                    </small>
+                  </div>
+                )}
+                
                 <img 
-                  src={costume.image} 
+                  src={generatedImageUrl || costume.image} 
                   alt={costume.name} 
                   className={styles.magImg}
+                  style={{ display: isGenerating ? 'none' : 'block' }}
+                  onLoad={() => {
+                    // Nếu ảnh load thành công (bao gồm cả ảnh AI hoặc ảnh gốc)
+                    setIsGenerating(false);
+                  }}
+                  onError={(e) => {
+                    console.error("Lỗi load ảnh:", e.target.src);
+                    setGeneratedImageUrl(null); // Fallback về ảnh gốc
+                    setIsGenerating(false);
+                  }}
                 />
+                
                 <div className={styles.magOverlay}></div>
                 
                 {/* Floating Stamp */}
@@ -140,12 +189,12 @@ export default function LookbookModal({
                   <strong className={styles.itemName}>{bottom.name}</strong>
                 </div>
                 <div className={styles.gridItem}>
-                  <span className={styles.itemLabel}>Phụ kiện Cổ truyền</span>
-                  <strong className={styles.itemName}>{tradAcc.name}</strong>
+                  <span className={styles.itemLabel}>Giày dép</span>
+                  <strong className={styles.itemName}>{footwear.name}</strong>
                 </div>
                 <div className={styles.gridItem}>
-                  <span className={styles.itemLabel}>Điểm nhấn Gen Z</span>
-                  <strong className={styles.itemNameRemix}>{genzAcc.name}</strong>
+                  <span className={styles.itemLabel}>Mũ / Phụ Kiện</span>
+                  <strong className={styles.itemNameRemix}>{headwear.name}</strong>
                 </div>
               </div>
 

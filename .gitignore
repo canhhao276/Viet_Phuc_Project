@@ -11,3 +11,8 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+
+# Môi trường và Bảo mật
+.env
+.env.*
+!.env.example

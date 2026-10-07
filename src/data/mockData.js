@@ -54,7 +54,8 @@ export const COSTUMES = [
     gender: 'Unisex',
     formality: 4,
     colorScheme: ['#8C2D19', '#1A365D', '#D4AF37'],
-    tags: ['Gen Z Favorite', 'Gọn gàng', 'Chuẩn ngũ thường']
+    tags: ['Gen Z Favorite', 'Gọn gàng', 'Chuẩn ngũ thường'],
+    type: 'traditional'
   },
   {
     id: 'ao_tac',
@@ -66,7 +67,8 @@ export const COSTUMES = [
     gender: 'Unisex',
     formality: 5,
     colorScheme: ['#9E2A2B', '#E6C687', '#22577A'],
-    tags: ['Trang nghiêm', 'Du xuân', 'Lễ hội']
+    tags: ['Trang nghiêm', 'Du xuân', 'Lễ hội'],
+    type: 'traditional'
   },
   {
     id: 'ao_nhat_binh',
@@ -78,7 +80,8 @@ export const COSTUMES = [
     gender: 'Nữ',
     formality: 5,
     colorScheme: ['#C99700', '#B83232', '#38A3A5'],
-    tags: ['Quý phái', 'Hoàng triều', 'Vương giả']
+    tags: ['Quý phái', 'Hoàng triều', 'Vương giả'],
+    type: 'traditional'
   },
   {
     id: 'ao_dai',
@@ -90,7 +93,8 @@ export const COSTUMES = [
     gender: 'Unisex',
     formality: 4,
     colorScheme: ['#FFFFFF', '#D90429', '#2EC4B6'],
-    tags: ['Quốc phục', 'Thanh lịch', 'Duyên dáng']
+    tags: ['Quốc phục', 'Thanh lịch', 'Duyên dáng'],
+    type: 'traditional'
   },
   {
     id: 'ao_tu_than',
@@ -102,7 +106,8 @@ export const COSTUMES = [
     gender: 'Nữ',
     formality: 3,
     colorScheme: ['#582F0E', '#E07A5F', '#3D405B'],
-    tags: ['Kinh Bắc', 'Dân dã', 'Mộc mạc duyên']
+    tags: ['Kinh Bắc', 'Dân dã', 'Mộc mạc duyên'],
+    type: 'traditional'
   },
   {
     id: 'ao_doi_kham',
@@ -114,7 +119,34 @@ export const COSTUMES = [
     gender: 'Unisex',
     formality: 4,
     colorScheme: ['#4A4E69', '#9A8C98', '#F2E9E4'],
-    tags: ['Cổ phong', 'Khoác ngoài', 'Bay bổng']
+    tags: ['Cổ phong', 'Khoác ngoài', 'Bay bổng'],
+    type: 'traditional'
+  },
+  {
+    id: 'ao_yem_cach_tan',
+    name: 'Áo Yếm Cách Tân (Gen Z)',
+    dynasty: 'Đương đại',
+    image: '/costumes/ao_doi_kham.jpg',
+    category: 'Remix Quyến Rũ',
+    story: 'Thiết kế lấy cảm hứng từ áo yếm dân gian, kết hợp với các đường cắt xẻ hiện đại, tôn vinh vẻ đẹp tự tin và cá tính của giới trẻ.',
+    gender: 'Nữ',
+    formality: 2,
+    colorScheme: ['#D90429', '#1C1917', '#FFFFFF'],
+    tags: ['Remix', 'Cá tính', 'Tự tin'],
+    type: 'remix'
+  },
+  {
+    id: 'blazer_coat',
+    name: 'Áo Blazer Khoác Hờ',
+    dynasty: 'Đương đại',
+    image: '/costumes/ao_tu_than.jpg',
+    category: 'Âu phục kết hợp',
+    story: 'Blazer dáng rộng khoác ngoài trang phục truyền thống tạo nên phong cách Menswear lai Đông-Tây vô cùng thời thượng.',
+    gender: 'Unisex',
+    formality: 3,
+    colorScheme: ['#D1C7BD', '#3D405B', '#1A365D'],
+    tags: ['Layering', 'Thời thượng', 'Smart-casual'],
+    type: 'remix'
   }
 ];
 
@@ -156,69 +188,79 @@ export const BOTTOMS = [
   }
 ];
 
-export const ACCESSORIES_TRADITIONAL = [
-  {
-    id: 'man_lua',
-    name: 'Khăn đóng / Mấn lụa',
-    icon: 'Sparkles',
-    desc: 'Tạo nét trang nghiêm, cao quý cho khuôn mặt'
-  },
-  {
-    id: 'quat_xep',
-    name: 'Quạt xếp trầm hương vẽ cảnh',
-    icon: 'Wind',
-    desc: 'Phụ kiện cầm tay tao nhã, đậm chất phong lưu nho nhã'
-  },
-  {
-    id: 'chuoi_ngoc',
-    name: 'Chuỗi vòng ngọc trai nhiều tầng',
-    icon: 'CircleDot',
-    desc: 'Điểm xuyết nơi cổ áo, tôn vinh nét đài các kiêu sa'
-  },
+export const FOOTWEAR = [
   {
     id: 'hai_theu',
-    name: 'Hài thêu hoa sen chỉ ngũ sắc',
+    name: 'Hài thêu hoa sen ngũ sắc',
     icon: 'Footprints',
-    desc: 'Nâng niu từng bước chân duyên dáng'
+    desc: 'Nâng niu từng bước chân, đậm chất cung đình.',
+    type: 'traditional'
   },
   {
     id: 'guoc_moc',
-    name: 'Guốc mộc quai nhung truyền thống',
+    name: 'Guốc mộc quai nhung',
     icon: 'ShieldCheck',
-    desc: 'Âm thanh lách cách thân quen nơi phố cổ'
-  }
-];
-
-export const ACCESSORIES_GENZ = [
+    desc: 'Âm thanh lách cách thân quen nơi phố cổ.',
+    type: 'traditional'
+  },
   {
     id: 'sneaker_retro',
     name: 'Sneaker trắng Vintage Retro',
     icon: 'Zap',
-    desc: 'Bật tung năng lượng Gen Z, thoải mái dạo phố cả ngày'
+    desc: 'Bật tung năng lượng, thoải mái dạo phố.',
+    type: 'remix'
+  },
+  {
+    id: 'boots_da',
+    name: 'Boots da cổ cao',
+    icon: 'Zap',
+    desc: 'Cá tính mạnh mẽ, phá vỡ mọi khuôn khổ.',
+    type: 'remix'
+  }
+];
+
+export const HEADWEAR = [
+  {
+    id: 'man_lua',
+    name: 'Khăn đóng / Mấn lụa',
+    icon: 'Sparkles',
+    desc: 'Tạo nét trang nghiêm, cao quý cho khuôn mặt.',
+    type: 'traditional'
+  },
+  {
+    id: 'quat_xep',
+    name: 'Quạt xếp trầm hương',
+    icon: 'Wind',
+    desc: 'Phụ kiện cầm tay tao nhã, phong lưu nho nhã.',
+    type: 'traditional'
+  },
+  {
+    id: 'chuoi_ngoc',
+    name: 'Chuỗi vòng ngọc trai',
+    icon: 'CircleDot',
+    desc: 'Điểm xuyết nơi cổ áo, kiêu sa đài các.',
+    type: 'traditional'
   },
   {
     id: 'kinh_y2k',
-    name: 'Kính mát Oval phong cách Y2K',
+    name: 'Kính mát Oval Y2K',
     icon: 'Glasses',
-    desc: 'Tạo visual thần thái cá tính, chụp lookbook siêu ăn ảnh'
+    desc: 'Tạo visual thần thái cá tính, chụp ảnh siêu ngầu.',
+    type: 'remix'
   },
   {
     id: 'tui_canvas',
-    name: 'Túi Tote Canvas thư pháp Remix',
+    name: 'Túi Tote Canvas thư pháp',
     icon: 'ShoppingBag',
-    desc: 'Tiện lợi đựng sổ tay, bình nước, mang tinh thần bảo vệ môi trường'
-  },
-  {
-    id: 'blazer_coat',
-    name: 'Áo khoác Blazer khoác hờ vai',
-    icon: 'Layers',
-    desc: 'Layering thời thượng hòa trộn Đông - Tây độc đáo'
+    desc: 'Tiện lợi, mang tinh thần bảo vệ môi trường.',
+    type: 'remix'
   },
   {
     id: 'mu_beret',
-    name: 'Mũ Beret nỉ phong cách Paris',
+    name: 'Mũ Beret nỉ Paris',
     icon: 'Smile',
-    desc: 'Nét thơ mộng giao thoa phong cách Đông Dương (Indochine)'
+    desc: 'Nét thơ mộng giao thoa phong cách Indochine.',
+    type: 'remix'
   }
 ];
 

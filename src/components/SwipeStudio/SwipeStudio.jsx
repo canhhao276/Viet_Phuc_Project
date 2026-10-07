@@ -7,7 +7,6 @@ import {
   Sparkles, 
   Shirt, 
   Layers, 
-  Compass, 
   Glasses, 
   ChevronLeft, 
   ChevronRight, 
@@ -17,102 +16,146 @@ import {
   Star,
   CheckCircle2,
   ArrowRight,
+  Footprints,
   Sparkle
 } from 'lucide-react';
 import { 
   COSTUMES, 
   BOTTOMS, 
-  ACCESSORIES_TRADITIONAL, 
-  ACCESSORIES_GENZ, 
+  FOOTWEAR, 
+  HEADWEAR, 
   CULTURAL_RULES 
 } from '../../data/mockData';
+import { calculateDetailedHarmony, checkAllRules } from '../../data/outfitRules';
+import { processNgheThanFeedback } from '../../data/ngheThanEngine';
 import styles from './SwipeStudio.module.css';
 
 export default function SwipeStudio({ 
   selectedOccasion, 
-  onFinishLook, 
+  onFinishLook,
   onTriggerWarning 
 }) {
-  // Steps: 0 = Áo chính (Flashcard), 1 = Quần/Váy, 2 = Phụ kiện Cổ truyền, 3 = Remix Gen Z
+  // 4 bước quy trình phối đồ
+  // 0: Áo Chính (Flashcard 3D)
+  // 1: Quần / Xiêm Y
+  // 2: Giày Dép
+  // 3: Mũ / Phụ Kiện
   const [currentStep, setCurrentStep] = useState(0);
 
-  // Selections
+  // Bộ lọc phong cách: 'all' | 'traditional' | 'remix'
+  const [activeTab, setActiveTab] = useState('all');
+
+  // Lựa chọn trang phục đang phối
+  const [costumeIndex, setCostumeIndex] = useState(0);
   const [selectedCostume, setSelectedCostume] = useState(COSTUMES[0]);
   const [selectedBottom, setSelectedBottom] = useState(BOTTOMS[0]);
-  const [selectedTradAcc, setSelectedTradAcc] = useState(ACCESSORIES_TRADITIONAL[0]);
-  const [selectedGenzAcc, setSelectedGenzAcc] = useState(ACCESSORIES_GENZ[0]);
+  const [selectedFootwear, setSelectedFootwear] = useState(FOOTWEAR[0]);
+  const [selectedHeadwear, setSelectedHeadwear] = useState(HEADWEAR[0]);
 
-  // Index of active costume in Step 0
-  const [costumeIndex, setCostumeIndex] = useState(0);
-
-  // 3D Flip state for the active costume Flashcard
+  // Trạng thái lật thẻ Flashcard 3D (mặt trước: ảnh/tên áo, mặt sau: điển tích/kiến thức)
   const [isFlipped, setIsFlipped] = useState(false);
 
-  // Check cultural mismatch rules
-  const checkRules = (costume, bottom, genzAcc) => {
-    for (const rule of CULTURAL_RULES) {
-      if (rule.costumeId === costume.id) {
-        if (rule.prohibitedBottom && bottom && rule.prohibitedBottom === bottom.id) {
-          onTriggerWarning(rule);
-          return false;
-        }
-        if (rule.prohibitedGenz && genzAcc && rule.prohibitedGenz === genzAcc.id) {
-          if (!rule.triggerWhenOccasion || rule.triggerWhenOccasion === selectedOccasion.id) {
-            onTriggerWarning(rule);
-            return false;
-          }
-        }
-      }
-    }
-    return true;
-  };
-
-  // Change costume index safely & reset flip state
-  const changeCostume = (newIndex) => {
-    const safeIndex = (newIndex + COSTUMES.length) % COSTUMES.length;
+  // Điều hướng chọn áo trong bộ bài Flashcard
+  const handleNextCostume = () => {
     setIsFlipped(false);
-    setCostumeIndex(safeIndex);
-    setSelectedCostume(COSTUMES[safeIndex]);
+    const nextIdx = (costumeIndex + 1) % COSTUMES.length;
+    setCostumeIndex(nextIdx);
+    setSelectedCostume(COSTUMES[nextIdx]);
   };
 
-  const handlePrevCostume = (e) => {
-    e?.stopPropagation();
-    changeCostume(costumeIndex - 1);
+  const handlePrevCostume = () => {
+    setIsFlipped(false);
+    const prevIdx = (costumeIndex - 1 + COSTUMES.length) % COSTUMES.length;
+    setCostumeIndex(prevIdx);
+    setSelectedCostume(COSTUMES[prevIdx]);
   };
 
-  const handleNextCostume = (e) => {
-    e?.stopPropagation();
-    changeCostume(costumeIndex + 1);
-  };
-
-  const handleCardClick = () => {
-    setIsFlipped(prev => !prev);
-  };
-
-  // Calculate harmony score
-  const calculateHarmony = () => {
-    let score = 94;
-    if (selectedOccasion?.recommendedCostumes?.includes(selectedCostume.id)) {
-      score += 5;
+  const handleSelectCostumeById = (costume) => {
+    setIsFlipped(false);
+    const idx = COSTUMES.findIndex(c => c.id === costume.id);
+    if (idx !== -1) {
+      setCostumeIndex(idx);
+      setSelectedCostume(costume);
     }
-    return Math.min(score, 100);
   };
 
-  const handleCompleteLook = () => {
-    const isClean = checkRules(selectedCostume, selectedBottom, selectedGenzAcc);
-    if (!isClean) return;
+  // Kiểm tra vi phạm luật văn hóa bằng Nghê Thần Engine
+  const checkRules = (costume, bottom, footwear, headwear) => {
+    // 1. Kiểm tra rule từ ngheThanEngine
+    const feedback = processNgheThanFeedback({
+      costume,
+      bottom,
+      footwear,
+      headwear,
+      occasion: selectedOccasion
+    }, calculateHarmony());
 
+    if (feedback && feedback.severity === 'critical') {
+      onTriggerWarning && onTriggerWarning({
+        title: feedback.title,
+        message: feedback.message,
+        suggestion: feedback.suggestion
+      });
+      return;
+    }
+
+    // 2. Kiểm tra rule từ danh sách CULTURAL_RULES
+    const matchedRule = CULTURAL_RULES.find(rule => {
+      if (rule.costumeId !== costume.id) return false;
+      if (rule.prohibitedBottom && rule.prohibitedBottom === bottom.id) return true;
+      if (rule.prohibitedGenz && (footwear.id === rule.prohibitedGenz || headwear.id === rule.prohibitedGenz)) {
+        if (rule.triggerWhenOccasion) {
+          return rule.triggerWhenOccasion === selectedOccasion.id;
+        }
+        return true;
+      }
+      return false;
+    });
+
+    if (matchedRule && onTriggerWarning) {
+      onTriggerWarning(matchedRule);
+    }
+  };
+
+  // Tính điểm hài hòa dựa trên engine của Khánh
+  const calculateHarmony = () => {
+    try {
+      const harmony = calculateDetailedHarmony({
+        costume: selectedCostume,
+        bottom: selectedBottom,
+        footwear: selectedFootwear,
+        headwear: selectedHeadwear,
+        occasion: selectedOccasion
+      });
+      return harmony.score;
+    } catch {
+      let score = 92;
+      if (selectedOccasion?.recommendedCostumes?.includes(selectedCostume.id)) {
+        score += 6;
+      }
+      return Math.min(score, 100);
+    }
+  };
+
+  // Hoàn tất bộ phối & gửi ra Lookbook Modal
+  const handleCompleteLook = () => {
     onFinishLook({
       costume: selectedCostume,
       bottom: selectedBottom,
-      tradAcc: selectedTradAcc,
-      genzAcc: selectedGenzAcc,
+      footwear: selectedFootwear,
+      headwear: selectedHeadwear,
       occasion: selectedOccasion,
       harmonyScore: calculateHarmony()
     });
   };
 
   const activeCostume = COSTUMES[costumeIndex];
+
+  // Lọc danh sách theo tab phong cách nếu người dùng chọn
+  const filterByTab = (items) => {
+    if (activeTab === 'all') return items;
+    return items.filter(item => item.type === activeTab);
+  };
 
   return (
     <section id="studio" className={styles.studioSection}>
@@ -171,8 +214,8 @@ export default function SwipeStudio({
               onClick={() => setCurrentStep(2)}
             >
               <div className={styles.stepNumber}>3</div>
-              <Compass size={16} />
-              <span>Phụ Kiện Cổ Truyền</span>
+              <Footprints size={16} />
+              <span>Giày Dép</span>
             </button>
 
             <button 
@@ -181,43 +224,95 @@ export default function SwipeStudio({
             >
               <div className={styles.stepNumber}>4</div>
               <Glasses size={16} />
-              <span>Phá Cách Gen Z</span>
+              <span>Mũ / Phụ Kiện</span>
+            </button>
+          </div>
+
+          {/* Bộ lọc phong cách (Tất cả / Truyền thống / Hiện đại) */}
+          <div style={{ display: 'flex', justifyContent: 'center', gap: '10px', marginTop: '16px' }}>
+            <button 
+              onClick={() => setActiveTab('all')}
+              style={{
+                padding: '6px 16px',
+                borderRadius: '9999px',
+                border: '1px solid rgba(255, 255, 255, 0.3)',
+                background: activeTab === 'all' ? '#FFFFFF' : 'rgba(0, 0, 0, 0.35)',
+                color: activeTab === 'all' ? '#2B1800' : '#FFFFFF',
+                cursor: 'pointer',
+                fontWeight: '700',
+                fontSize: '0.82rem',
+                transition: 'all 0.2s'
+              }}
+            >
+              Tất Cả Mẫu
+            </button>
+            <button 
+              onClick={() => setActiveTab('traditional')}
+              style={{
+                padding: '6px 16px',
+                borderRadius: '9999px',
+                border: '1px solid #F4D35E',
+                background: activeTab === 'traditional' ? 'linear-gradient(135deg, #F4D35E, #C99700)' : 'rgba(0, 0, 0, 0.35)',
+                color: activeTab === 'traditional' ? '#2B1800' : '#F4D35E',
+                cursor: 'pointer',
+                fontWeight: '700',
+                fontSize: '0.82rem',
+                transition: 'all 0.2s'
+              }}
+            >
+              Truyền Thống
+            </button>
+            <button 
+              onClick={() => setActiveTab('remix')}
+              style={{
+                padding: '6px 16px',
+                borderRadius: '9999px',
+                border: '1px solid rgba(238, 150, 165, 0.5)',
+                background: activeTab === 'remix' ? '#C83E40' : 'rgba(0, 0, 0, 0.35)',
+                color: '#FFFFFF',
+                cursor: 'pointer',
+                fontWeight: '700',
+                fontSize: '0.82rem',
+                transition: 'all 0.2s'
+              }}
+            >
+              Hiện Đại (Remix)
             </button>
           </div>
         </div>
 
-        {/* Workspace Grid */}
+        {/* Workspace Grid Layout */}
         <div className={styles.workspaceGrid}>
-          
-          {/* Main Interaction Area */}
+
+          {/* =========================================================================
+              CỘT TRÁI: KHU VỰC THỬ ĐỒ & FLASHCARD 3D TƯƠNG TÁC
+             ========================================================================= */}
           <div className={styles.interactionArea}>
-            
-            {/* =========================================================================
-                BƯỚC 1: FLASHCARD 3D LẬT THẺ HỌC ĐIỂN TÍCH TRANG PHỤC (QUIZLET STYLE)
-               ========================================================================= */}
+
+            {/* -------------------------------------------------------------------------
+                BƯỚC 1: FLASHCARD 3D CHỌN ÁO & KHÁM PHÁ ĐIỂN TÍCH (QUIZLET STYLE)
+               ------------------------------------------------------------------------- */}
             {currentStep === 0 && (
               <div className={styles.flashcardStudio}>
                 
-                {/* Thanh trạng thái phía trên Flashcard */}
+                {/* Status Bar */}
                 <div className={styles.cardStatusBar}>
-                  <div className={styles.deckCounter}>
-                    <span>Mẫu số</span>
-                    <strong>{costumeIndex + 1} / {COSTUMES.length}</strong>
-                  </div>
+                  <span className={styles.deckCounter}>
+                    Mẫu số <strong>{costumeIndex + 1}</strong> / {COSTUMES.length}
+                  </span>
 
                   <div className={styles.flipGuidance}>
-                    <RotateCw size={14} className={styles.spinIcon} />
+                    <RotateCw size={13} className={styles.spinIcon} />
                     <span>Nhấn vào ảnh để lật thẻ xem điển tích văn hóa</span>
                   </div>
                 </div>
 
-                {/* Khung tương tác Flashcard 3D */}
+                {/* SÂN KHẤU FLASHCARD 3D */}
                 <div className={styles.flashcardStage}>
-                  {/* Nút lùi mẫu trước */}
+                  {/* Mũi tên lùi áo */}
                   <button 
-                    className={`${styles.deckNavArrow} ${styles.deckNavLeft}`}
+                    className={styles.deckNavArrow} 
                     onClick={handlePrevCostume}
-                    aria-label="Mẫu áo trước"
                     title="Mẫu áo trước"
                   >
                     <ChevronLeft size={24} />
@@ -226,23 +321,22 @@ export default function SwipeStudio({
                   {/* THẺ 3D FLIP CONTAINER */}
                   <div 
                     className={`${styles.flashcardWrapper} ${isFlipped ? styles.isFlipped : ''}`}
-                    onClick={handleCardClick}
-                    role="button"
-                    tabIndex={0}
-                    aria-label={`Thẻ học ${activeCostume.name}. Nhấn để lật thẻ.`}
+                    onClick={() => setIsFlipped(prev => !prev)}
                   >
                     <div className={styles.flashcardInner}>
                       
-                      {/* ---------------- MẶT TRƯỚC (Front: CHỈ ĐỂ DUY NHẤT TÊN ÁO TRÊN ẢNH) ---------------- */}
+                      {/* ---------------- MẶT TRƯỚC (Front: TỐI GIẢN - CHỈ TÊN ÁO & ẢNH ĐẸP) ---------------- */}
                       <div className={styles.cardFront}>
                         <img 
                           src={activeCostume.image} 
-                          alt={activeCostume.name} 
+                          alt={activeCostume.name}
                           className={styles.frontPhoto}
                         />
+
+                        {/* Gradient bóng mờ chân ảnh */}
                         <div className={styles.frontGradientOverlay}></div>
 
-                        {/* Chỉ để duy nhất Tên áo trên ảnh, không để các chi tiết khác làm rối */}
+                        {/* CHỈ HIỂN THỊ DUY NHẤT TÊN ÁO - THEO ĐÚNG YÊU CẦU CỦA BẠN */}
                         <div className={styles.frontInfoBlock}>
                           <h3 className={styles.costumeNameTitle}>
                             {activeCostume.name}
@@ -274,98 +368,93 @@ export default function SwipeStudio({
                             </button>
                           </div>
 
-                          {/* Tên trang phục & Niên đại mặt sau */}
+                          {/* Tiêu đề & Niên đại */}
                           <div className={styles.backHeadingGroup}>
-                            <span className={styles.backDynastyText}>{activeCostume.dynasty}</span>
-                            <h3 className={styles.backCostumeName}>{activeCostume.name}</h3>
+                            <span className={styles.backDynastyText}>🏛️ {activeCostume.dynasty}</span>
+                            <h4 className={styles.backCostumeName}>{activeCostume.name}</h4>
                             <span className={styles.backCategoryText}>{activeCostume.category}</span>
                           </div>
 
-                          {/* Nội dung ý nghĩa lịch sử & cốt cách ngũ thường */}
+                          {/* Câu chuyện / Điển tích */}
                           <div className={styles.storyCard}>
                             <div className={styles.storyCardHeader}>
-                              <BookOpen size={16} />
-                              <span>Ý Nghĩa & Nguồn Gốc Di Sản</span>
+                              <BookOpen size={14} />
+                              <span>Ý nghĩa văn hóa & Cấu trúc</span>
                             </div>
-                            <p className={styles.storyParagraph}>{activeCostume.story}</p>
+                            <p className={styles.storyParagraph}>
+                              {activeCostume.story}
+                            </p>
                           </div>
 
-                          {/* Bảng thông số quy chuẩn văn hóa */}
+                          {/* Thông số & Quy chuẩn */}
                           <div className={styles.backSpecsGrid}>
                             <div className={styles.specBox}>
-                              <span className={styles.specLabel}>Độ trang trọng:</span>
+                              <span className={styles.specLabel}>Tính trang trọng:</span>
                               <div className={styles.starsRow}>
-                                <div className={styles.starIcons}>
-                                  {[...Array(5)].map((_, i) => (
-                                    <Star 
-                                      key={i} 
-                                      size={14} 
-                                      fill={i < activeCostume.formality ? '#F4D35E' : 'none'} 
-                                      color={i < activeCostume.formality ? '#F4D35E' : '#735751'} 
-                                    />
-                                  ))}
-                                </div>
-                                <span className={styles.formalityNum}>{activeCostume.formality}/5</span>
-                              </div>
-                            </div>
-
-                            <div className={styles.specBox}>
-                              <span className={styles.specLabel}>Phù hợp mặc:</span>
-                              <strong className={styles.specValue}>{activeCostume.gender}</strong>
-                            </div>
-                          </div>
-
-                          {/* Bảng sắc độ màu cổ truyền */}
-                          {activeCostume.colorScheme && (
-                            <div className={styles.paletteRow}>
-                              <span className={styles.paletteLabel}>Sắc độ cổ truyền:</span>
-                              <div className={styles.paletteSwatches}>
-                                {activeCostume.colorScheme.map((color, idx) => (
-                                  <div 
-                                    key={idx} 
-                                    className={styles.swatchDot} 
-                                    style={{ backgroundColor: color }}
-                                    title={`Mã màu: ${color}`}
+                                {[...Array(5)].map((_, i) => (
+                                  <Star 
+                                    key={i} 
+                                    size={12} 
+                                    fill={i < activeCostume.formality ? '#F4D35E' : 'none'}
+                                    color={i < activeCostume.formality ? '#F4D35E' : 'rgba(255,255,255,0.3)'}
                                   />
                                 ))}
                               </div>
                             </div>
-                          )}
 
-                          {/* Tags di sản */}
+                            <div className={styles.specBox}>
+                              <span className={styles.specLabel}>Phù hợp giới tính:</span>
+                              <strong className={styles.specVal}>{activeCostume.gender}</strong>
+                            </div>
+                          </div>
+
+                          {/* Bảng màu ngũ hành */}
+                          <div className={styles.paletteRow}>
+                            <span className={styles.paletteLabel}>Màu sắc kinh điển:</span>
+                            <div className={styles.paletteSwatches}>
+                              {activeCostume.colorScheme.map((color, idx) => (
+                                <span 
+                                  key={idx} 
+                                  className={styles.swatchDot} 
+                                  style={{ backgroundColor: color }}
+                                  title={`Màu ${color}`}
+                                />
+                              ))}
+                            </div>
+                          </div>
+
+                          {/* Thẻ đặc trưng */}
                           <div className={styles.backTagsList}>
-                            {activeCostume.tags.map(tag => (
-                              <span key={tag} className={styles.backTagItem}>#{tag}</span>
+                            {activeCostume.tags.map((tag, idx) => (
+                              <span key={idx} className={styles.backTagItem}>
+                                #{tag}
+                              </span>
                             ))}
                           </div>
 
-                          {/* Dòng gợi ý lật lại */}
                           <div className={styles.backPromptNotice}>
-                            <RotateCcw size={12} />
-                            <span>Chạm vào thẻ để lật trở lại mặt ảnh người mẫu</span>
+                            <Sparkle size={12} />
+                            <span>Nhấn lại vào thẻ để lật về ảnh thử đồ</span>
                           </div>
-
                         </div>
                       </div>
 
                     </div>
                   </div>
 
-                  {/* Nút tiến mẫu tiếp theo */}
+                  {/* Mũi tên tiến áo */}
                   <button 
-                    className={`${styles.deckNavArrow} ${styles.deckNavRight}`}
+                    className={styles.deckNavArrow} 
                     onClick={handleNextCostume}
-                    aria-label="Mẫu áo tiếp theo"
-                    title="Mẫu áo tiếp theo"
+                    title="Mẫu áo kế tiếp"
                   >
                     <ChevronRight size={24} />
                   </button>
                 </div>
 
-                {/* HÀNG CHỌN NHANH TẤT CẢ CÁC MẪU ÁO (Thumbnail Carousel) */}
+                {/* HÀNG CHỌN MẪU ÁO NHANH BÊN DƯỚI */}
                 <div className={styles.quickCostumePicker}>
                   <span className={styles.pickerTitle}>Danh mục Việt phục trong bộ sưu tập:</span>
-                  
                   <div className={styles.thumbnailList}>
                     {COSTUMES.map((costume, idx) => {
                       const isActive = idx === costumeIndex;
@@ -373,29 +462,27 @@ export default function SwipeStudio({
                         <button
                           key={costume.id}
                           className={`${styles.thumbBtn} ${isActive ? styles.thumbBtnActive : ''}`}
-                          onClick={() => changeCostume(idx)}
-                          title={costume.name}
+                          onClick={() => handleSelectCostumeById(costume)}
                         >
-                          <img 
-                            src={costume.image} 
-                            alt={costume.name} 
-                            className={styles.thumbImg} 
-                          />
+                          <img src={costume.image} alt={costume.name} className={styles.thumbImg} />
                           <span className={styles.thumbLabel}>{costume.name}</span>
-                          {isActive && <div className={styles.activeDot} />}
+                          {isActive && <div className={styles.activeDot}></div>}
                         </button>
                       );
                     })}
                   </div>
                 </div>
 
-                {/* NÚT CHỐT ÁO & SANG BƯỚC 2 */}
+                {/* NÚT CHỐT ÁO CHUYỂN BƯỚC */}
                 <div className={styles.costumeActionRow}>
                   <button 
                     className={styles.btnConfirmCostume}
-                    onClick={() => setCurrentStep(1)}
+                    onClick={() => {
+                      setSelectedCostume(activeCostume);
+                      setCurrentStep(1);
+                    }}
                   >
-                    <CheckCircle2 size={20} />
+                    <CheckCircle2 size={18} />
                     <span>Chốt {activeCostume.name} • Sang Bước 2: Quần & Xiêm Y</span>
                     <ArrowRight size={18} />
                   </button>
@@ -404,9 +491,9 @@ export default function SwipeStudio({
               </div>
             )}
 
-            {/* =========================================================================
-                BƯỚC 2: CHỌN QUẦN / XIÊM Y / VÁY
-               ========================================================================= */}
+            {/* -------------------------------------------------------------------------
+                BƯỚC 2: CHỌN QUẦN / XIÊM Y
+               ------------------------------------------------------------------------- */}
             {currentStep === 1 && (
               <div className={styles.gridSelection}>
                 <div className={styles.stepTitleBar}>
@@ -420,7 +507,7 @@ export default function SwipeStudio({
                 </div>
 
                 <div className={styles.optionsList}>
-                  {BOTTOMS.map((bottom) => {
+                  {filterByTab(BOTTOMS).map((bottom) => {
                     const isSelected = selectedBottom.id === bottom.id;
                     return (
                       <div 
@@ -428,23 +515,23 @@ export default function SwipeStudio({
                         className={`${styles.optionCard} ${isSelected ? styles.optionCardActive : ''}`}
                         onClick={() => {
                           setSelectedBottom(bottom);
-                          checkRules(selectedCostume, bottom, selectedGenzAcc);
+                          checkRules(selectedCostume, bottom, selectedFootwear, selectedHeadwear);
                         }}
                       >
                         <div 
                           className={styles.colorSwatch} 
-                          style={{ backgroundColor: bottom.color }}
+                          style={{ backgroundColor: bottom.colorCode }}
                         />
                         <div className={styles.optionInfo}>
                           <div className={styles.optionHeaderRow}>
                             <strong>{bottom.name}</strong>
-                            <span className={bottom.type === 'remix' ? styles.typeBadgeRemix : styles.typeBadgeTrad}>
-                              {bottom.type === 'remix' ? 'Remix Gen Z' : 'Cổ điển'}
+                            <span className={bottom.type === 'traditional' ? styles.typeBadgeTrad : styles.typeBadgeRemix}>
+                              {bottom.type === 'traditional' ? 'Truyền thống' : 'Remix Gen Z'}
                             </span>
                           </div>
-                          <p>{bottom.description}</p>
+                          <p>{bottom.desc}</p>
                         </div>
-                        {isSelected && <Check size={22} className={styles.selectedIcon} />}
+                        {isSelected && <Check size={20} className={styles.selectedIcon} />}
                       </div>
                     );
                   })}
@@ -463,45 +550,53 @@ export default function SwipeStudio({
                     className={styles.btnNextStep}
                     onClick={() => setCurrentStep(2)}
                   >
-                    <span>Tiếp tục: Phụ kiện Cổ truyền</span>
+                    <span>Tiếp tục: Giày Dép</span>
                     <ChevronRight size={18} />
                   </button>
                 </div>
               </div>
             )}
 
-            {/* =========================================================================
-                BƯỚC 3: CHỌN PHỤ KIỆN CỔ TRUYỀN
-               ========================================================================= */}
+            {/* -------------------------------------------------------------------------
+                BƯỚC 3: CHỌN GIÀY DÉP
+               ------------------------------------------------------------------------- */}
             {currentStep === 2 && (
               <div className={styles.gridSelection}>
                 <div className={styles.stepTitleBar}>
                   <div>
-                    <h4 className={styles.stepTitle}>Bước 3: Chọn Phụ Kiện Cổ Truyền</h4>
+                    <h4 className={styles.stepTitle}>Bước 3: Chọn Giày Dép</h4>
                     <p className={styles.stepSubtitle}>
-                      Khăn đóng, quạt trầm, ngọc trai... tôn vinh cốt cách đoan trang
+                      Hài thêu, guốc mộc, sneaker retro... tạo dáng đi thanh thoát hoặc năng động
                     </p>
                   </div>
-                  <span className={styles.selectedCountBadge}>Đã chọn: {selectedTradAcc.name}</span>
+                  <span className={styles.selectedCountBadge}>Đã chọn: {selectedFootwear.name}</span>
                 </div>
 
                 <div className={styles.optionsList}>
-                  {ACCESSORIES_TRADITIONAL.map((acc) => {
-                    const isSelected = selectedTradAcc.id === acc.id;
+                  {filterByTab(FOOTWEAR).map((footwear) => {
+                    const isSelected = selectedFootwear.id === footwear.id;
                     return (
                       <div 
-                        key={acc.id}
+                        key={footwear.id}
                         className={`${styles.optionCard} ${isSelected ? styles.optionCardActive : ''}`}
-                        onClick={() => setSelectedTradAcc(acc)}
+                        onClick={() => {
+                          setSelectedFootwear(footwear);
+                          checkRules(selectedCostume, selectedBottom, footwear, selectedHeadwear);
+                        }}
                       >
-                        <div className={styles.accBadge}>
-                          <Sparkles size={20} />
+                        <div className={footwear.type === 'traditional' ? styles.accBadge : styles.accBadgeGenz}>
+                          <Footprints size={20} />
                         </div>
                         <div className={styles.optionInfo}>
-                          <strong>{acc.name}</strong>
-                          <p>{acc.desc}</p>
+                          <div className={styles.optionHeaderRow}>
+                            <strong>{footwear.name}</strong>
+                            <span className={footwear.type === 'traditional' ? styles.typeBadgeTrad : styles.typeBadgeRemix}>
+                              {footwear.type === 'traditional' ? 'Cổ truyền' : 'Gen Z Remix'}
+                            </span>
+                          </div>
+                          <p>{footwear.desc}</p>
                         </div>
-                        {isSelected && <Check size={22} className={styles.selectedIcon} />}
+                        {isSelected && <Check size={20} className={styles.selectedIcon} />}
                       </div>
                     );
                   })}
@@ -520,48 +615,53 @@ export default function SwipeStudio({
                     className={styles.btnNextStep}
                     onClick={() => setCurrentStep(3)}
                   >
-                    <span>Tiếp tục: Phá Cách Gen Z</span>
+                    <span>Tiếp tục: Mũ & Phụ Kiện</span>
                     <ChevronRight size={18} />
                   </button>
                 </div>
               </div>
             )}
 
-            {/* =========================================================================
-                BƯỚC 4: CHỌN PHỤ KIỆN REMIX GEN Z
-               ========================================================================= */}
+            {/* -------------------------------------------------------------------------
+                BƯỚC 4: CHỌN MŨ / PHỤ KIỆN
+               ------------------------------------------------------------------------- */}
             {currentStep === 3 && (
               <div className={styles.gridSelection}>
                 <div className={styles.stepTitleBar}>
                   <div>
-                    <h4 className={styles.stepTitle}>Bước 4: Thêm Điểm Nhấn Phá Cách Gen Z</h4>
+                    <h4 className={styles.stepTitle}>Bước 4: Thêm Mũ & Phụ Kiện Đi Kèm</h4>
                     <p className={styles.stepSubtitle}>
-                      Sneaker, kính mát Y2K, túi tote thư pháp... tạo dấu ấn hiện đại
+                      Khăn đóng, quạt trầm, chuỗi ngọc, kính Y2K... hoàn thiện diện mạo
                     </p>
                   </div>
-                  <span className={styles.selectedCountBadge}>Đã chọn: {selectedGenzAcc.name}</span>
+                  <span className={styles.selectedCountBadge}>Đã chọn: {selectedHeadwear.name}</span>
                 </div>
 
                 <div className={styles.optionsList}>
-                  {ACCESSORIES_GENZ.map((acc) => {
-                    const isSelected = selectedGenzAcc.id === acc.id;
+                  {filterByTab(HEADWEAR).map((headwear) => {
+                    const isSelected = selectedHeadwear.id === headwear.id;
                     return (
                       <div 
-                        key={acc.id}
+                        key={headwear.id}
                         className={`${styles.optionCard} ${isSelected ? styles.optionCardActive : ''}`}
                         onClick={() => {
-                          setSelectedGenzAcc(acc);
-                          checkRules(selectedCostume, selectedBottom, acc);
+                          setSelectedHeadwear(headwear);
+                          checkRules(selectedCostume, selectedBottom, selectedFootwear, headwear);
                         }}
                       >
-                        <div className={styles.accBadgeGenz}>
+                        <div className={headwear.type === 'traditional' ? styles.accBadge : styles.accBadgeGenz}>
                           <Glasses size={20} />
                         </div>
                         <div className={styles.optionInfo}>
-                          <strong>{acc.name}</strong>
-                          <p>{acc.desc}</p>
+                          <div className={styles.optionHeaderRow}>
+                            <strong>{headwear.name}</strong>
+                            <span className={headwear.type === 'traditional' ? styles.typeBadgeTrad : styles.typeBadgeRemix}>
+                              {headwear.type === 'traditional' ? 'Cổ truyền' : 'Gen Z Remix'}
+                            </span>
+                          </div>
+                          <p>{headwear.desc}</p>
                         </div>
-                        {isSelected && <Check size={22} className={styles.selectedIcon} />}
+                        {isSelected && <Check size={20} className={styles.selectedIcon} />}
                       </div>
                     );
                   })}
@@ -573,7 +673,7 @@ export default function SwipeStudio({
                     onClick={() => setCurrentStep(2)}
                   >
                     <ChevronLeft size={18} />
-                    <span>Quay lại: Phụ Kiện Cổ Truyền</span>
+                    <span>Quay lại: Giày Dép</span>
                   </button>
 
                   <button 
@@ -581,7 +681,7 @@ export default function SwipeStudio({
                     onClick={handleCompleteLook}
                   >
                     <Sparkles size={18} />
-                    <span>Hoàn Tất & Xuất Tạp Chí Lookbook</span>
+                    <span>Hoàn Tất & Tạo Lookbook Chuyền Tay</span>
                   </button>
                 </div>
               </div>
@@ -593,15 +693,17 @@ export default function SwipeStudio({
               CỘT PHẢI: GƯƠNG THỬ ĐỒ HOÀNG GIA & CHỈ SỐ HÀI HÒA VĂN HÓA
              ========================================================================= */}
           <div className={styles.outfitPreviewCard}>
+            
+            {/* Header Gương Thử Đồ */}
             <div className={styles.previewHeader}>
               <div className={styles.mirrorHeaderTop}>
                 <span className={styles.previewEyebrow}>GƯƠNG THỬ ĐỒ TRỰC TUYẾN</span>
                 <span className={styles.mirrorLiveTag}>Live Mix</span>
               </div>
-              <h4 className={styles.previewTitle}>{selectedOccasion.name}</h4>
+              <h3 className={styles.previewTitle}>{selectedOccasion.name}</h3>
             </div>
 
-            {/* Khung gương visual sang trọng */}
+            {/* Thumbnail ảnh đại diện */}
             <div className={styles.previewThumbnail}>
               <img 
                 src={selectedCostume.image} 
@@ -609,41 +711,37 @@ export default function SwipeStudio({
                 className={styles.thumbnailImg}
               />
               <div className={styles.thumbnailVignette}></div>
-              
-              <div className={styles.thumbnailDynastyBadge}>
-                {selectedCostume.dynasty}
-              </div>
-
+              <div className={styles.thumbnailDynastyBadge}>{selectedCostume.dynasty}</div>
               <div className={styles.previewOverlayBadge}>
                 {selectedCostume.name}
               </div>
             </div>
 
-            {/* Bảng chi tiết 4 lớp trang phục */}
+            {/* Bảng chi tiết 4 thành phần */}
             <div className={styles.breakdownList}>
               <div className={styles.breakdownRow}>
                 <span className={styles.rowLabel}>1. Áo chính:</span>
-                <strong className={styles.rowValueHighlight}>{selectedCostume.name}</strong>
+                <span className={styles.rowValueHighlight}>{selectedCostume.name}</span>
               </div>
               <div className={styles.breakdownRow}>
                 <span className={styles.rowLabel}>2. Xiêm y:</span>
                 <span className={styles.rowValue}>{selectedBottom.name}</span>
               </div>
               <div className={styles.breakdownRow}>
-                <span className={styles.rowLabel}>3. Cổ truyền:</span>
-                <span className={styles.rowValue}>{selectedTradAcc.name}</span>
+                <span className={styles.rowLabel}>3. Giày dép:</span>
+                <span className={styles.rowValue}>{selectedFootwear.name}</span>
               </div>
               <div className={styles.breakdownRow}>
-                <span className={styles.rowLabel}>4. Gen Z:</span>
-                <span className={styles.rowValueBadge}>{selectedGenzAcc.name}</span>
+                <span className={styles.rowLabel}>4. Mũ / Phụ kiện:</span>
+                <span className={styles.rowValueBadge}>{selectedHeadwear.name}</span>
               </div>
             </div>
 
-            {/* Thước đo hài hòa văn hóa */}
+            {/* Hộp chỉ số hài hòa văn hóa */}
             <div className={styles.harmonyScoreBox}>
               <div className={styles.scoreRow}>
                 <span className={styles.scoreLabel}>Chỉ số hài hòa văn hóa:</span>
-                <strong className={styles.scorePercent}>{calculateHarmony()}%</strong>
+                <span className={styles.scorePercent}>{calculateHarmony()}%</span>
               </div>
               
               <div className={styles.scoreTrack}>
