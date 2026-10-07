@@ -37,6 +37,7 @@ export default function LookbookModal({
       const hfKey = import.meta.env.VITE_HF_API_KEY;
 
       GeminiService.generateOutfitImage({
+        costumeId: lookData.costume.id,
         costumeName: lookData.costume.name,
         bottomName: lookData.bottom.name,
         tradAccName: lookData.footwear.name,

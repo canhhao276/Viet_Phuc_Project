@@ -280,47 +280,37 @@ export async function getRemixSuggestion({ originalLookName, mixFormula, desired
  * Sinh url ảnh minh họa hoàn chỉnh bằng AI Image Generator.
  * Sử dụng pollinations.ai (Free, không cần API Key) làm engine sinh ảnh.
  */
-export async function generateOutfitImage({ costumeName, bottomName, tradAccName, genzAccName, occasionName, colorPalette }, apiKey, hfApiKey) {
-  // B1: Gọi Gemini để dịch thông tin tiếng Việt thành câu prompt tiếng Anh xịn xò
+export async function generateOutfitImage({ costumeId, costumeName, bottomName, tradAccName, genzAccName, occasionName, colorPalette }, apiKey, hfApiKey) {
+  // Bộ sưu tập ảnh bìa tạp chí Lookbook di sản chuẩn mực 100% văn hóa triều đại
+  const LOOKBOOK_CURATED = {
+    ao_ngu_than: '/lookbook/ao_ngu_than.jpg',
+    ao_tac: '/lookbook/ao_tac.jpg',
+    ao_nhat_binh: '/lookbook/ao_nhat_binh.jpg',
+    ao_tu_than: '/lookbook/ao_tu_than.jpg',
+    ao_dai: '/lookbook/ao_dai.jpg',
+    ao_doi_kham: '/lookbook/ao_doi_kham.jpg',
+    ao_giao_linh: '/lookbook/ao_giao_linh.jpg'
+  };
+
+  // Nếu có ảnh Lookbook chuẩn mực trong bộ sưu tập di sản, ưu tiên hiển thị để đảm bảo tính chuẩn xác lịch sử cao nhất
+  if (costumeId && LOOKBOOK_CURATED[costumeId]) {
+    return {
+      prompt: `Bìa tạp chí Lookbook di sản: ${costumeName} (${occasionName})`,
+      imageUrl: LOOKBOOK_CURATED[costumeId]
+    };
+  }
+
+  // Fallback: Tạo prompt qua Gemini nếu có costume mới
   const prompt = buildImageGenerationPrompt({ costumeName, bottomName, tradAccName, genzAccName, occasionName, colorPalette });
   const result = await callGeminiAPI(prompt, apiKey);
 
   let imagePrompt = FALLBACK_DATA.imageGeneration.imagePrompt;
-  
   if (result && result.imagePrompt) {
     imagePrompt = result.imagePrompt;
   }
 
-  // B2: Gọi API sinh ảnh chất lượng cao (Sử dụng model FLUX tiên tiến)
   const encodedPrompt = encodeURIComponent(imagePrompt);
   let imageUrl = `https://image.pollinations.ai/prompt/${encodedPrompt}?width=768&height=1024&model=flux&nologo=true`;
-
-  // Nếu có HuggingFace API Key, thử gọi qua Hugging Face Router
-  if (hfApiKey && hfApiKey !== 'your_huggingface_api_key_here') {
-    try {
-      const hfResponse = await fetch(
-        "https://router.huggingface.co/hf-inference/models/black-forest-labs/FLUX.1-schnell",
-        {
-          headers: {
-            Authorization: `Bearer ${hfApiKey}`,
-            "Content-Type": "application/json",
-            "Accept": "image/png"
-          },
-          method: "POST",
-          body: JSON.stringify({ inputs: imagePrompt }),
-        }
-      );
-      
-      if (hfResponse.ok) {
-        const imageBlob = await hfResponse.blob();
-        imageUrl = URL.createObjectURL(imageBlob);
-      } else {
-        console.warn('[GeminiService] HuggingFace serverless FLUX is currently unavailable/deprecated. Using Pollinations FLUX engine.');
-      }
-    } catch (err) {
-      console.warn('[GeminiService] HuggingFace network notice. Using Pollinations FLUX engine.');
-    }
-  }
 
   return {
     prompt: imagePrompt,
