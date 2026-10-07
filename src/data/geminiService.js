@@ -24,10 +24,10 @@ import {
 // API Key nên được đặt trong .env hoặc truyền từ bên ngoài
 // KHÔNG hardcode API key trong source code
 const GEMINI_CONFIG = {
-  // Sử dụng Gemini 2.0 Flash (miễn phí, nhanh, phù hợp cho demo)
-  apiUrl: 'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent',
+  // Sử dụng Gemini 3.1 Flash Lite (mô hình mới nhất, siêu nhanh và phản hồi cực nhạy)
+  apiUrl: 'https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-lite:generateContent',
   // Fallback model
-  fallbackUrl: 'https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent',
+  fallbackUrl: 'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent',
 
   generationConfig: {
     temperature: 0.7,        // Cân bằng giữa sáng tạo và nhất quán
@@ -291,19 +291,20 @@ export async function generateOutfitImage({ costumeName, bottomName, tradAccName
     imagePrompt = result.imagePrompt;
   }
 
-  // B2: Gọi API sinh ảnh miễn phí của Pollinations (Bỏ enhance để gen cực nhanh 3-5s)
+  // B2: Gọi API sinh ảnh chất lượng cao (Sử dụng model FLUX tiên tiến)
   const encodedPrompt = encodeURIComponent(imagePrompt);
-  let imageUrl = `https://image.pollinations.ai/prompt/${encodedPrompt}?width=768&height=1024&nologo=true`;
+  let imageUrl = `https://image.pollinations.ai/prompt/${encodedPrompt}?width=768&height=1024&model=flux&nologo=true`;
 
-  // Nếu có HuggingFace API Key, dùng model FLUX hoặc SDXL xịn xò
+  // Nếu có HuggingFace API Key, thử gọi qua Hugging Face Router
   if (hfApiKey && hfApiKey !== 'your_huggingface_api_key_here') {
     try {
       const hfResponse = await fetch(
-        "https://api-inference.huggingface.co/models/black-forest-labs/FLUX.1-schnell",
+        "https://router.huggingface.co/hf-inference/models/black-forest-labs/FLUX.1-schnell",
         {
           headers: {
             Authorization: `Bearer ${hfApiKey}`,
             "Content-Type": "application/json",
+            "Accept": "image/png"
           },
           method: "POST",
           body: JSON.stringify({ inputs: imagePrompt }),
@@ -314,10 +315,10 @@ export async function generateOutfitImage({ costumeName, bottomName, tradAccName
         const imageBlob = await hfResponse.blob();
         imageUrl = URL.createObjectURL(imageBlob);
       } else {
-        console.warn('[GeminiService] HuggingFace API failed. Falling back to Pollinations.');
+        console.warn('[GeminiService] HuggingFace serverless FLUX is currently unavailable/deprecated. Using Pollinations FLUX engine.');
       }
     } catch (err) {
-      console.warn('[GeminiService] HuggingFace API network error. Falling back to Pollinations.');
+      console.warn('[GeminiService] HuggingFace network notice. Using Pollinations FLUX engine.');
     }
   }
 
