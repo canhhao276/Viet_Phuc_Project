@@ -4,54 +4,10 @@
   left: 0;
   width: 100%;
   z-index: 100;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.06);
-}
-
-/* Micro announcement banner */
-.topAnnounce {
-  background: #1A1615;
-  color: #ECE5DA;
-  padding: 6px 0;
-  font-size: 0.74rem;
-  letter-spacing: 0.05em;
-  border-bottom: 1px solid rgba(201, 151, 0, 0.3);
-}
-
-.announceContainer {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-
-.announceText {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  font-weight: 600;
-  color: #F4D35E;
-}
-
-.sparkleIcon {
-  font-size: 0.85rem;
-}
-
-.topMeta {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  color: #A8A199;
-}
-
-.dotSeparator {
-  color: var(--color-gold);
-}
-
-/* Main Navigation Bar */
-.mainNav {
   background: #FFFFFF;
-  border-bottom: 1px solid #EBE4D8;
-  padding: 12px 0;
-  transition: all var(--transition-normal);
+  border-bottom: 1px solid #ECE6DD;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.04);
+  padding: 14px 0;
 }
 
 .navContainer {
@@ -64,27 +20,22 @@
 .brandGroup {
   display: flex;
   align-items: center;
-  gap: 14px;
+  gap: 12px;
   text-decoration: none;
   color: inherit;
 }
 
 .sealLogo {
-  width: 48px;
-  height: 48px;
-  border: 2.5px solid #A81C1C;
+  width: 44px;
+  height: 44px;
+  border: 2px solid #A81C1C;
   border-radius: 4px;
-  padding: 3px;
+  padding: 2.5px;
   background: #FFFFFF;
   display: flex;
   align-items: center;
   justify-content: center;
-  box-shadow: 0 2px 8px rgba(168, 28, 28, 0.2);
-  transition: transform var(--transition-bounce);
-}
-
-.brandGroup:hover .sealLogo {
-  transform: rotate(-3deg) scale(1.05);
+  box-shadow: 0 2px 8px rgba(168, 28, 28, 0.15);
 }
 
 .sealInner {
@@ -98,9 +49,9 @@
   color: #A81C1C;
   font-family: var(--font-serif);
   font-weight: 800;
-  font-size: 0.72rem;
+  font-size: 0.68rem;
   line-height: 1.05;
-  letter-spacing: 0.08em;
+  letter-spacing: 0.06em;
 }
 
 .sealDivider {
@@ -117,18 +68,18 @@
 
 .brandTitle {
   font-family: var(--font-serif);
-  font-size: 1.45rem;
+  font-size: 1.35rem;
   font-weight: 800;
-  letter-spacing: 0.08em;
+  letter-spacing: 0.06em;
   color: #A81C1C;
   line-height: 1.1;
 }
 
 .brandTagline {
-  font-size: 0.7rem;
+  font-size: 0.68rem;
   font-weight: 600;
-  letter-spacing: 0.06em;
-  color: #7D746D;
+  letter-spacing: 0.05em;
+  color: #7A726A;
   margin-top: 2px;
 }
 
@@ -141,12 +92,12 @@
 
 .navItem {
   text-decoration: none;
-  font-size: 0.84rem;
+  font-size: 0.85rem;
   font-weight: 700;
   letter-spacing: 0.06em;
   color: #2D2726;
   position: relative;
-  padding: 8px 0;
+  padding: 6px 0;
   transition: color var(--transition-fast);
 }
 
@@ -169,67 +120,31 @@
   width: 100%;
 }
 
-/* Action Group */
-.actionGroup {
-  display: flex;
-  align-items: center;
-  gap: 14px;
-}
-
-.lookbookPill {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  padding: 8px 16px;
-  border-radius: var(--radius-full);
-  background: #FFF9E6;
-  border: 1px solid rgba(201, 151, 0, 0.4);
-  color: #8C6B00;
-  font-size: 0.82rem;
-  font-weight: 700;
-  text-decoration: none;
-  transition: all var(--transition-fast);
-}
-
-.lookbookPill:hover {
-  background: #FFF2CC;
-  transform: translateY(-1px);
-}
-
-.heartIcon {
-  color: #A81C1C;
-  fill: #A81C1C;
-}
-
 .ctaButton {
   display: flex;
   align-items: center;
   gap: 8px;
   padding: 10px 22px;
   border-radius: var(--radius-full);
-  background: linear-gradient(135deg, #B81D24, #8A0E14);
+  background: #A81C1C;
   color: #FFFFFF;
   border: none;
   font-family: var(--font-sans);
-  font-size: 0.9rem;
+  font-size: 0.88rem;
   font-weight: 700;
-  letter-spacing: 0.03em;
   cursor: pointer;
-  box-shadow: 0 4px 14px rgba(184, 29, 36, 0.35);
+  box-shadow: 0 4px 14px rgba(168, 28, 28, 0.25);
   transition: all var(--transition-fast);
 }
 
 .ctaButton:hover {
-  background: linear-gradient(135deg, #CF222A, #A8121A);
+  background: #C22424;
   transform: translateY(-2px);
-  box-shadow: 0 6px 18px rgba(184, 29, 36, 0.45);
+  box-shadow: 0 6px 18px rgba(168, 28, 28, 0.35);
 }
 
-@media (max-width: 990px) {
+@media (max-width: 860px) {
   .navMenu {
-    display: none;
-  }
-  .topMeta {
     display: none;
   }
 }

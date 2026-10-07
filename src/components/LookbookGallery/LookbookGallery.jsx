@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Heart, RotateCcw, Share2, Sparkles, BookOpen, Layers } from 'lucide-react';
+import { Heart, RotateCcw, Sparkles } from 'lucide-react';
 import styles from './LookbookGallery.module.css';
 
 export default function LookbookGallery({ lookbooks, onRemixLook, onLikeLook }) {
@@ -12,6 +12,7 @@ export default function LookbookGallery({ lookbooks, onRemixLook, onLikeLook }) 
   return (
     <section id="lookbook-community" className={styles.section}>
       <div className="container">
+        {/* Section Header */}
         <div className={styles.headerBlock}>
           <div className="badge badge-genz">
             <Sparkles size={14} />
@@ -19,8 +20,7 @@ export default function LookbookGallery({ lookbooks, onRemixLook, onLikeLook }) 
           </div>
           <h2 className={styles.title}>Lookbook "Chuyền Tay"</h2>
           <p className={styles.subtitle}>
-            Nơi lưu giữ và truyền cảm hứng từ những bản phối độc bản của bạn bè khắp nơi. 
-            Thấy một look ưng ý? Bấm nút <strong>Remix</strong> để sáng tạo phiên bản của riêng bạn!
+            Bộ sưu tập các phương án phối đồ độc bản. Tối giản chi tiết để tôn vinh trọn vẹn vẻ đẹp của xiêm y truyền thống.
           </p>
 
           {/* Filter Pills */}
@@ -52,68 +52,49 @@ export default function LookbookGallery({ lookbooks, onRemixLook, onLikeLook }) 
           </div>
         </div>
 
-        {/* Gallery Grid */}
+        {/* Gallery Grid with Ultra-Clean Full-Bleed Cards (Không bị khối chữ che ảnh) */}
         <div className={styles.galleryGrid}>
           {filteredLooks.map((look) => (
-            <div key={look.id} className={styles.lookCard}>
-              <div className={styles.mediaBox}>
-                <img 
-                  src={look.costumeImg} 
-                  alt={look.title} 
-                  className={styles.lookImg}
-                />
-                <div className={styles.mediaOverlay}></div>
-                
-                <span className={styles.occasionBadge}>{look.occasionName}</span>
+            <div key={look.id} className={styles.cleanBleedCard}>
+              {/* Full-bleed Photo Background */}
+              <img 
+                src={look.costumeImg} 
+                alt={look.title} 
+                className={styles.bgPhoto}
+              />
+              <div className={styles.photoOverlay}></div>
 
-                <div className={styles.mediaBottom}>
-                  <div className={styles.paletteDots}>
-                    {look.palette?.map((col, idx) => (
-                      <span 
-                        key={idx} 
-                        className={styles.dot} 
-                        style={{ backgroundColor: col }}
-                      />
-                    ))}
-                  </div>
-                  <span className={styles.scoreBadge}>{look.harmonyScore}% Hài hòa</span>
+              {/* 1. Top Row: Stats & Minimal Like Button */}
+              <div className={styles.cardTopRow}>
+
+                <div className={styles.topRightActions}>
+                  <span className={styles.scorePill}>{look.harmonyScore}% Hài hòa</span>
+                  <button 
+                    className={styles.likeBtn}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      onLikeLook(look.id);
+                    }}
+                    title="Thả tim"
+                  >
+                    <Heart size={14} className={styles.heartIcon} />
+                    <span>{look.likes}</span>
+                  </button>
                 </div>
               </div>
 
-              {/* Look Info */}
-              <div className={styles.lookBody}>
-                <div className={styles.creatorRow}>
-                  <span className={styles.creatorName}>@{look.creator}</span>
-                  <div className={styles.statsRow}>
-                    <button 
-                      className={styles.likeBtn}
-                      onClick={() => onLikeLook(look.id)}
-                    >
-                      <Heart size={14} className={styles.likeIcon} />
-                      <span>{look.likes}</span>
-                    </button>
-                    <span className={styles.remixStat}>
-                      <RotateCcw size={13} />
-                      <span>{look.remixes}</span>
-                    </span>
-                  </div>
-                </div>
+              {/* 2. Bottom Caption: Minimalist Typography & Remix Action (Không che thân hình/áo) */}
+              <div className={styles.cleanBottomCaption}>
+                <span className={styles.occasionSub}>{look.occasionName}</span>
+                <h3 className={styles.lookHeading}>{look.title}</h3>
+                <p className={styles.costumeName}>{look.costumeName} • @{look.creator}</p>
 
-                <h3 className={styles.lookTitle}>{look.title}</h3>
-                <p className={styles.costumeName}>{look.costumeName}</p>
-
-                <div className={styles.formulaBox}>
-                  <Layers size={13} className={styles.formulaIcon} />
-                  <span>{look.mixFormula}</span>
-                </div>
-
-                <div className={styles.cardActions}>
+                <div className={styles.cardActionRow}>
                   <button 
-                    className="btn btn-gold" 
-                    style={{ width: '100%', padding: '10px 18px', fontSize: '0.9rem' }}
+                    className={styles.remixPillBtn}
                     onClick={() => onRemixLook(look)}
                   >
-                    <RotateCcw size={16} />
+                    <RotateCcw size={15} />
                     <span>Remix Look Này</span>
                   </button>
                 </div>

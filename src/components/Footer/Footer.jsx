@@ -5,6 +5,14 @@ import styles from './Footer.module.css';
 export default function Footer() {
   return (
     <footer className={styles.footer}>
+      {/* Dải sóng lụa đỏ chuyển cảnh đỉnh cao từ Lookbook sang Footer */}
+      <div className={styles.silkWaveTop}>
+        <svg viewBox="0 0 1440 70" fill="none" preserveAspectRatio="none">
+          <path d="M0,0 L1440,0 L1440,20 C1200,55 980,10 700,38 C400,65 180,18 0,45 Z" fill="#FFFFFF"></path>
+          <path d="M0,45 C180,18 400,65 700,38 C980,10 1200,55 1440,20 L1440,26 C1180,62 960,18 680,44 C380,72 160,24 0,52 Z" fill="rgba(244, 211, 94, 0.3)"></path>
+        </svg>
+      </div>
+
       <div className={`container ${styles.footerGrid}`}>
         <div className={styles.brandCol}>
           <div className={styles.brandTitle}>

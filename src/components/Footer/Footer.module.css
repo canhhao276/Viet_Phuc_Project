@@ -1,8 +1,24 @@
 .footer {
-  background: #1A1615;
+  background: linear-gradient(180deg, #52090B 0%, #1A1615 100%);
   color: #ECE5DA;
-  border-top: 2px solid var(--color-gold);
-  padding: 60px 0 0;
+  border-top: none;
+  padding: 0 0 0;
+  position: relative;
+  overflow: hidden;
+}
+
+.silkWaveTop {
+  width: 100%;
+  line-height: 0;
+  margin-bottom: 40px;
+  position: relative;
+  z-index: 2;
+}
+
+.silkWaveTop svg {
+  display: block;
+  width: 100%;
+  height: 65px;
 }
 
 .footerGrid {

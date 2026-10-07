@@ -13,7 +13,7 @@ html {
 
 body {
   font-family: var(--font-sans);
-  background-color: var(--bg-parchment);
+  background-color: #FFFFFF;
   color: var(--text-primary);
   min-height: 100vh;
   line-height: 1.6;
@@ -23,24 +23,15 @@ body {
   position: relative;
 }
 
-/* Background subtle paper/damask effect */
+/* Clean luxury background - No noisy/muddy dots */
 body::before {
-  content: '';
-  position: fixed;
-  inset: 0;
-  background-image: 
-    radial-gradient(var(--border-subtle) 1px, transparent 1px),
-    radial-gradient(circle at 10% 20%, rgba(201, 151, 0, 0.03) 0%, transparent 40%),
-    radial-gradient(circle at 90% 80%, rgba(158, 42, 43, 0.03) 0%, transparent 40%);
-  background-size: 32px 32px, 100% 100%, 100% 100%;
-  pointer-events: none;
-  z-index: -1;
+  display: none;
 }
 
-/* Typography Headings */
-h1, h2, h3, .font-heritage {
-  font-family: var(--font-serif);
-  font-weight: 700;
+/* Typography Headings - Bold modern Vietnamese heritage sans-serif */
+h1, h2, h3, h4, h5, h6, .font-heritage {
+  font-family: var(--font-heading);
+  font-weight: 800;
   letter-spacing: -0.01em;
 }
 

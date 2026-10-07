@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import Header from './components/Header/Header';
 import HeroSection from './components/HeroSection/HeroSection';
+import FeaturedShowcase from './components/FeaturedShowcase/FeaturedShowcase';
 import ContextSelector from './components/ContextSelector/ContextSelector';
 import SwipeStudio from './components/SwipeStudio/SwipeStudio';
 import NgheThanModal from './components/NgheThanMascot/NgheThanModal';
@@ -86,7 +87,12 @@ export default function App() {
         onExploreLookbooks={() => scrollTo('lookbook-community')}
       />
 
-      {/* 3. Context & Occasion Selector */}
+      {/* 3. Featured Categories Showcase (3 Box Tràn Viền Chuẩn vietphuc.net) */}
+      <FeaturedShowcase 
+        onSelectCategory={() => scrollTo('studio')}
+      />
+
+      {/* 4. Context & Occasion Selector */}
       <ContextSelector 
         selectedOccasion={selectedOccasion}
         onSelectOccasion={(occ) => {
