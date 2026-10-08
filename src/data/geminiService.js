@@ -24,10 +24,10 @@ import {
 // API Key nên được đặt trong .env hoặc truyền từ bên ngoài
 // KHÔNG hardcode API key trong source code
 const GEMINI_CONFIG = {
-  // Sử dụng Gemini 2.0 Flash (miễn phí, nhanh, phù hợp cho demo)
-  apiUrl: 'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent',
+  // Sử dụng Gemini 3.8 Flash (bản yêu cầu của hệ thống)
+  apiUrl: 'https://generativelanguage.googleapis.com/v1beta/models/gemini-3.8-flash:generateContent',
   // Fallback model
-  fallbackUrl: 'https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent',
+  fallbackUrl: 'https://generativelanguage.googleapis.com/v1beta/models/gemini-3.8-flash:generateContent',
 
   generationConfig: {
     temperature: 0.7,        // Cân bằng giữa sáng tạo và nhất quán
@@ -278,47 +278,96 @@ export async function getRemixSuggestion({ originalLookName, mixFormula, desired
 
 /**
  * Sinh url ảnh minh họa hoàn chỉnh bằng AI Image Generator.
- * Sử dụng pollinations.ai (Free, không cần API Key) làm engine sinh ảnh.
+ * Sử dụng Segmind API làm engine sinh ảnh.
  */
-export async function generateOutfitImage({ costumeName, bottomName, tradAccName, genzAccName, occasionName, colorPalette }, apiKey, hfApiKey) {
-  // B1: Gọi Gemini để dịch thông tin tiếng Việt thành câu prompt tiếng Anh xịn xò
-  const prompt = buildImageGenerationPrompt({ costumeName, bottomName, tradAccName, genzAccName, occasionName, colorPalette });
-  const result = await callGeminiAPI(prompt, apiKey);
-
+export async function generateOutfitImage({ costumeName, bottomName, tradAccName, genzAccName, occasionName, colorPalette }, apiKey, segmindApiKey) {
   let imagePrompt = FALLBACK_DATA.imageGeneration.imagePrompt;
-  
-  if (result && result.imagePrompt) {
-    imagePrompt = result.imagePrompt;
+
+  // B1: Gọi Gemini để dịch thông tin tiếng Việt thành câu prompt
+  if (!apiKey || apiKey === 'your_gemini_api_key_here') {
+    return { error: 'Thiếu Gemini API Key. Vui lòng thêm VITE_GEMINI_API_KEY vào file .env' };
   }
 
-  // B2: Gọi API sinh ảnh miễn phí của Pollinations (Bỏ enhance để gen cực nhanh 3-5s)
-  const encodedPrompt = encodeURIComponent(imagePrompt);
-  let imageUrl = `https://image.pollinations.ai/prompt/${encodedPrompt}?width=768&height=1024&nologo=true`;
+  const geminiUrl = `${GEMINI_CONFIG.apiUrl}?key=${apiKey}`;
+  const geminiBody = {
+    system_instruction: { parts: [{ text: SYSTEM_PROMPT }] },
+    contents: [{ parts: [{ text: buildImageGenerationPrompt({ costumeName, bottomName, tradAccName, genzAccName, occasionName, colorPalette }) }] }],
+    generationConfig: GEMINI_CONFIG.generationConfig
+  };
 
-  // Nếu có HuggingFace API Key, dùng model FLUX hoặc SDXL xịn xò
-  if (hfApiKey && hfApiKey !== 'your_huggingface_api_key_here') {
-    try {
-      const hfResponse = await fetch(
-        "https://api-inference.huggingface.co/models/black-forest-labs/FLUX.1-schnell",
-        {
-          headers: {
-            Authorization: `Bearer ${hfApiKey}`,
-            "Content-Type": "application/json",
-          },
-          method: "POST",
-          body: JSON.stringify({ inputs: imagePrompt }),
-        }
-      );
-      
-      if (hfResponse.ok) {
-        const imageBlob = await hfResponse.blob();
-        imageUrl = URL.createObjectURL(imageBlob);
-      } else {
-        console.warn('[GeminiService] HuggingFace API failed. Falling back to Pollinations.');
+  try {
+    const geminiRes = await fetch(geminiUrl, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(geminiBody)
+    });
+
+    if (!geminiRes.ok) {
+      if (geminiRes.status === 429) {
+        return { error: 'API Gemini đã hết lượt sử dụng (Rate Limit 429). Vui lòng thử lại sau!' };
+      } else if (geminiRes.status === 400 || geminiRes.status === 403) {
+        return { error: 'Gemini API Key không hợp lệ hoặc bị từ chối.' };
+      } else if (geminiRes.status === 503 || geminiRes.status === 500) {
+        return { error: 'Máy chủ Google Gemini đang quá tải (Lỗi 503). Vui lòng thử lại sau vài phút!' };
       }
-    } catch (err) {
-      console.warn('[GeminiService] HuggingFace API network error. Falling back to Pollinations.');
+      return { error: `Lỗi Gemini API: ${geminiRes.status}` };
+    } 
+
+    const data = await geminiRes.json();
+    const text = data?.candidates?.[0]?.content?.parts?.[0]?.text;
+    if (text) {
+      const parsed = parseGeminiResponse(text);
+      if (parsed && parsed.imagePrompt) imagePrompt = parsed.imagePrompt;
     }
+  } catch (err) {
+    return { error: 'Lỗi kết nối mạng khi gọi Gemini API.' };
+  }
+
+  // B2: Gọi API Segmind sinh ảnh
+  let imageUrl = null;
+
+  if (!segmindApiKey || segmindApiKey === 'your_segmind_api_key_here') {
+    return { error: 'Thiếu Segmind API Key! Vui lòng thêm VITE_SEGMIND_API_KEY vào file .env' };
+  }
+
+  try {
+    const segmindResponse = await fetch("https://api.segmind.com/v1/sdxl1.0-txt2img", {
+      method: "POST",
+      headers: {
+        "x-api-key": segmindApiKey,
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        prompt: imagePrompt,
+        negative_prompt: "ugly, blurry, bad anatomy, bad resolution, deformed, disfigured, text, watermark",
+        style: "base",
+        samples: 1,
+        scheduler: "UniPC",
+        num_inference_steps: 25,
+        guidance_scale: 8,
+        strength: 1,
+        seed: Math.floor(Math.random() * 1000000000),
+        img_width: 1024,
+        img_height: 1024,
+        refiner: true
+      })
+    });
+    
+    if (segmindResponse.ok) {
+      const imageBlob = await segmindResponse.blob();
+      imageUrl = URL.createObjectURL(imageBlob);
+    } else {
+      if (segmindResponse.status === 401 || segmindResponse.status === 403) {
+        return { error: 'Segmind API Key không hợp lệ hoặc đã hết Credits (Lỗi 401/403).' };
+      } else if (segmindResponse.status === 402 || segmindResponse.status === 406) {
+        return { error: 'Segmind API đã hết hạn mức Credits (Lỗi 402/406).' };
+      } else if (segmindResponse.status === 429) {
+        return { error: 'Segmind API đang quá tải (Rate Limit). Vui lòng thử lại sau.' };
+      }
+      return { error: `Lỗi Segmind API: ${segmindResponse.status} ${segmindResponse.statusText}` };
+    }
+  } catch (err) {
+    return { error: 'Lỗi kết nối mạng khi gọi Segmind API.' };
   }
 
   return {
