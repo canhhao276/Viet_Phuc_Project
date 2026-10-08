@@ -26,17 +26,18 @@ export default function LookbookModal({
   const magazineRef = useRef(null);
   const [generatedImageUrl, setGeneratedImageUrl] = useState(null);
   const [isGenerating, setIsGenerating] = useState(false);
-  const [apiError, setApiError] = useState(null);
+  const [imageMeta, setImageMeta] = useState({ engine: 'Đang tải...', isAi: false });
 
   useEffect(() => {
     if (lookData) {
       // Reset state & trigger AI Gen
       setGeneratedImageUrl(null);
       setIsGenerating(true);
-      setApiError(null);
+      setImageMeta({ engine: 'Đang kết nối AI...', isAi: false });
 
       const geminiKey = import.meta.env.VITE_GEMINI_API_KEY;
       const segmindKey = import.meta.env.VITE_SEGMIND_API_KEY;
+      const hfToken = import.meta.env.VITE_HF_TOKEN;
 
       GeminiService.generateOutfitImage({
         costumeId: lookData.costume.id,
@@ -46,22 +47,23 @@ export default function LookbookModal({
         genzAccName: lookData.headwear.name,
         occasionName: lookData.occasion.name,
         colorPalette: lookData.costume.colorScheme
-      }, geminiKey, segmindKey)
+      }, geminiKey, segmindKey, hfToken)
       .then(res => {
-        if (res.error) {
-          setApiError(res.error);
-          setGeneratedImageUrl(null);
-          setIsGenerating(false);
-        } else {
-          // Gắn URL mới vào state, nhưng chưa tắt loading.
-          // Tắt loading sẽ do thẻ <img> đảm nhận (onLoad/onError).
+        if (res && res.imageUrl) {
           setGeneratedImageUrl(res.imageUrl);
+          setImageMeta({
+            engine: res.engine || (res.isAiGenerated ? 'AI FLUX.1 ZeroGPU' : 'Tuyệt Tác Di Sản'),
+            isAi: !!res.isAiGenerated
+          });
+        } else {
+          setGeneratedImageUrl(lookData.costume.image);
+          setImageMeta({ engine: 'Tuyệt Tác Di Sản', isAi: false });
         }
       })
       .catch(err => {
         console.error("AI Gen Failed:", err);
-        setApiError('Có lỗi xảy ra khi tạo ảnh (lỗi kết nối).');
-        setIsGenerating(false);
+        setGeneratedImageUrl(lookData.costume.image);
+        setImageMeta({ engine: 'Tuyệt Tác Di Sản', isAi: false });
       });
 
       // Fire celebration confetti
@@ -125,19 +127,19 @@ export default function LookbookModal({
           onClick={(e) => e.stopPropagation()}
         >
           {/* Full-screen Loading Overlay */}
-          {isGenerating && !apiError && (
-            <div style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', backgroundColor: 'rgba(250, 248, 245, 0.95)', zIndex: 9999, display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center', borderRadius: 'inherit', backdropFilter: 'blur(5px)' }}>
+          {isGenerating && (
+            <div style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', backgroundColor: 'rgba(250, 248, 245, 0.96)', zIndex: 9999, display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center', borderRadius: 'inherit', backdropFilter: 'blur(8px)' }}>
               <span style={{ fontSize: '4rem', animation: 'spin 2s linear infinite', display: 'inline-block' }}>🎨</span>
-              <h2 style={{ color: '#9E2A2B', marginTop: '20px', fontSize: '1.8rem', textAlign: 'center' }}>Đang tạo ảnh, vui lòng chờ...</h2>
-              <p style={{ color: '#582F0E', marginTop: '10px', textAlign: 'center', maxWidth: '80%', fontSize: '1.1rem', lineHeight: '1.5' }}>
-                Nghê Thần đang kết hợp với AI để phác họa bộ Việt Phục của bạn.<br/>Quá trình này có thể mất tới 15 - 30 giây.
+              <h2 style={{ color: '#9E2A2B', marginTop: '20px', fontSize: '1.8rem', textAlign: 'center', fontFamily: "'Cinzel Decorative', serif" }}>Đang sáng tác Lookbook Tạp Chí...</h2>
+              <p style={{ color: '#582F0E', marginTop: '10px', textAlign: 'center', maxWidth: '80%', fontSize: '1.05rem', lineHeight: '1.6' }}>
+                Hệ thống AI đang kết nối GPU ZeroGPU (FLUX.1-schnell) để phác họa vẻ đẹp trang phục của bạn.<br/>Quá trình sáng tác mất khoảng 5 - 15 giây.
               </p>
               
               <style>
                 {`
                   @keyframes spin {
                     0% { transform: rotate(0deg) scale(1); }
-                    50% { transform: rotate(180deg) scale(1.2); }
+                    50% { transform: rotate(180deg) scale(1.18); }
                     100% { transform: rotate(360deg) scale(1); }
                   }
                 `}
@@ -172,27 +174,44 @@ export default function LookbookModal({
 
               {/* Main Photo Showcase */}
               <div className={styles.magPhotoFrame}>
-                {apiError && (
-                  <div className={styles.aiErrorPlaceholder} style={{ position: 'absolute', top: 0, left: 0, zIndex: 10, width: '100%', height: '100%', minHeight: '400px', backgroundColor: '#ffd6d6', display: 'flex', alignItems: 'center', justifyContent: 'center', flexDirection: 'column', padding: '20px', textAlign: 'center' }}>
-                    <span style={{ fontSize: '2rem', marginBottom: '10px' }}>⚠️</span>
-                    <p style={{ fontWeight: 'bold', color: '#9E2A2B' }}>Không thể tạo ảnh AI</p>
-                    <p style={{ color: '#582F0E', fontSize: '0.9rem', marginTop: '5px' }}>{apiError}</p>
-                    <p style={{ color: '#888', fontSize: '0.8rem', marginTop: '10px' }}>* Đang hiển thị ảnh mẫu tĩnh *</p>
-                  </div>
-                )}
+                {/* Floating Source Badge: AI FLUX hoặc Tuyệt Tác Di Sản */}
+                <div style={{
+                  position: 'absolute',
+                  top: '16px',
+                  right: '16px',
+                  zIndex: 12,
+                  backgroundColor: imageMeta.isAi ? 'rgba(31, 78, 70, 0.92)' : 'rgba(158, 42, 43, 0.92)',
+                  color: '#FFFFFF',
+                  padding: '6px 14px',
+                  borderRadius: '20px',
+                  fontSize: '0.78rem',
+                  fontWeight: '700',
+                  letterSpacing: '0.5px',
+                  backdropFilter: 'blur(8px)',
+                  boxShadow: '0 4px 14px rgba(0,0,0,0.25)',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '6px',
+                  border: '1px solid rgba(255,255,255,0.25)'
+                }}>
+                  <span>{imageMeta.isAi ? '⚡' : '👑'}</span>
+                  <span>{imageMeta.engine || (imageMeta.isAi ? 'AI FLUX.1 • ZeroGPU' : 'Tuyệt Tác Di Sản Hoàng Gia')}</span>
+                </div>
                 
                 <img 
                   src={generatedImageUrl || costume.image} 
                   alt={costume.name} 
                   className={styles.magImg}
-                  style={{ display: isGenerating ? 'none' : 'block', opacity: apiError ? 0.3 : 1 }}
+                  crossOrigin="anonymous"
+                  style={{ display: isGenerating ? 'none' : 'block', opacity: 1 }}
                   onLoad={() => {
-                    // Nếu ảnh load thành công (bao gồm cả ảnh AI hoặc ảnh gốc)
+                    // Khi ảnh load xong, tắt overlay loading
                     setIsGenerating(false);
                   }}
                   onError={(e) => {
                     console.error("Lỗi load ảnh:", e.target.src);
-                    setGeneratedImageUrl(null); // Fallback về ảnh gốc
+                    setGeneratedImageUrl(costume.image);
+                    setImageMeta({ engine: 'Di Sản Hoàng Gia', isAi: false });
                     setIsGenerating(false);
                   }}
                 />
