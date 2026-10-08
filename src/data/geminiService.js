@@ -26,8 +26,8 @@ import {
 const GEMINI_CONFIG = {
   // Sử dụng Gemini 3.1 Flash Lite (mô hình mới nhất, siêu nhanh và phản hồi cực nhạy)
   apiUrl: 'https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-lite:generateContent',
-  // Fallback model
-  fallbackUrl: 'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent',
+  // Fallback model: Gemini 3.8 Flash
+  fallbackUrl: 'https://generativelanguage.googleapis.com/v1beta/models/gemini-3.8-flash:generateContent',
 
   generationConfig: {
     temperature: 0.7,        // Cân bằng giữa sáng tạo và nhất quán
@@ -278,9 +278,9 @@ export async function getRemixSuggestion({ originalLookName, mixFormula, desired
 
 /**
  * Sinh url ảnh minh họa hoàn chỉnh bằng AI Image Generator.
- * Sử dụng pollinations.ai (Free, không cần API Key) làm engine sinh ảnh.
+ * Sử dụng Segmind API làm engine sinh ảnh.
  */
-export async function generateOutfitImage({ costumeId, costumeName, bottomName, tradAccName, genzAccName, occasionName, colorPalette }, apiKey, hfApiKey) {
+export async function generateOutfitImage({ costumeId, costumeName, bottomName, tradAccName, genzAccName, occasionName, colorPalette }, apiKey, segmindApiKey) {
   // Bộ sưu tập ảnh bìa tạp chí Lookbook di sản chuẩn mực 100% văn hóa triều đại
   const LOOKBOOK_CURATED = {
     ao_ngu_than: '/lookbook/ao_ngu_than.jpg',
@@ -292,25 +292,119 @@ export async function generateOutfitImage({ costumeId, costumeName, bottomName, 
     ao_giao_linh: '/lookbook/ao_giao_linh.jpg'
   };
 
-  // Nếu có ảnh Lookbook chuẩn mực trong bộ sưu tập di sản, ưu tiên hiển thị để đảm bảo tính chuẩn xác lịch sử cao nhất
+  let imagePrompt = FALLBACK_DATA.imageGeneration.imagePrompt;
+
+  // Nếu người dùng CÓ điền Segmind API Key, thực hiện quy trình sinh ảnh AI SDXL
+  if (segmindApiKey && segmindApiKey !== 'your_segmind_api_key_here') {
+    // B1: Gọi Gemini để dịch thông tin tiếng Việt thành câu prompt
+    if (!apiKey || apiKey === 'your_gemini_api_key_here') {
+      return { 
+        error: 'Thiếu Gemini API Key. Vui lòng thêm VITE_GEMINI_API_KEY vào file .env',
+        imageUrl: (costumeId && LOOKBOOK_CURATED[costumeId]) || null
+      };
+    }
+
+    const geminiUrl = `${GEMINI_CONFIG.apiUrl}?key=${apiKey}`;
+    const geminiBody = {
+      system_instruction: { parts: [{ text: SYSTEM_PROMPT }] },
+      contents: [{ parts: [{ text: buildImageGenerationPrompt({ costumeName, bottomName, tradAccName, genzAccName, occasionName, colorPalette }) }] }],
+      generationConfig: GEMINI_CONFIG.generationConfig
+    };
+
+    try {
+      const geminiRes = await fetch(geminiUrl, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(geminiBody)
+      });
+
+      if (!geminiRes.ok) {
+        let errText = `Lỗi Gemini API: ${geminiRes.status}`;
+        if (geminiRes.status === 429) {
+          errText = 'API Gemini đã hết lượt sử dụng (Rate Limit 429). Vui lòng thử lại sau!';
+        } else if (geminiRes.status === 400 || geminiRes.status === 403) {
+          errText = 'Gemini API Key không hợp lệ hoặc bị từ chối.';
+        } else if (geminiRes.status === 503 || geminiRes.status === 500) {
+          errText = 'Máy chủ Google Gemini đang quá tải (Lỗi 503). Vui lòng thử lại sau vài phút!';
+        }
+        return { 
+          error: errText,
+          imageUrl: (costumeId && LOOKBOOK_CURATED[costumeId]) || null
+        };
+      } 
+
+      const data = await geminiRes.json();
+      const text = data?.candidates?.[0]?.content?.parts?.[0]?.text;
+      if (text) {
+        const parsed = parseGeminiResponse(text);
+        if (parsed && parsed.imagePrompt) imagePrompt = parsed.imagePrompt;
+      }
+    } catch (err) {
+      return { 
+        error: 'Lỗi kết nối mạng khi gọi Gemini API.',
+        imageUrl: (costumeId && LOOKBOOK_CURATED[costumeId]) || null
+      };
+    }
+
+    // B2: Gọi API Segmind sinh ảnh SDXL
+    try {
+      const segmindResponse = await fetch("https://api.segmind.com/v1/sdxl1.0-txt2img", {
+        method: "POST",
+        headers: {
+          "x-api-key": segmindApiKey,
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+          prompt: imagePrompt,
+          negative_prompt: "ugly, blurry, bad anatomy, bad resolution, deformed, disfigured, text, watermark",
+          style: "base",
+          samples: 1,
+          scheduler: "UniPC",
+          num_inference_steps: 25,
+          guidance_scale: 8,
+          strength: 1,
+          seed: Math.floor(Math.random() * 1000000000),
+          img_width: 1024,
+          img_height: 1024,
+          refiner: true
+        })
+      });
+      
+      if (segmindResponse.ok) {
+        const imageBlob = await segmindResponse.blob();
+        return {
+          prompt: imagePrompt,
+          imageUrl: URL.createObjectURL(imageBlob)
+        };
+      } else {
+        let errDesc = `Lỗi Segmind API: ${segmindResponse.status} ${segmindResponse.statusText}`;
+        if (segmindResponse.status === 401 || segmindResponse.status === 403) {
+          errDesc = 'Segmind API Key không hợp lệ hoặc đã hết Credits (Lỗi 401/403).';
+        } else if (segmindResponse.status === 402 || segmindResponse.status === 406) {
+          errDesc = 'Segmind API đã hết hạn mức Credits (Lỗi 402/406).';
+        } else if (segmindResponse.status === 429) {
+          errDesc = 'Segmind API đang quá tải (Rate Limit). Vui lòng thử lại sau.';
+        }
+        return { 
+          error: errDesc,
+          imageUrl: (costumeId && LOOKBOOK_CURATED[costumeId]) || null
+        };
+      }
+    } catch (err) {
+      return { 
+        error: 'Lỗi kết nối mạng khi gọi Segmind API.',
+        imageUrl: (costumeId && LOOKBOOK_CURATED[costumeId]) || null
+      };
+    }
+  }
+
+  // Trường hợp không có Segmind Key: Tự động dùng bộ sưu tập ảnh Lookbook di sản chuẩn mực
   if (costumeId && LOOKBOOK_CURATED[costumeId]) {
     return {
       prompt: `Bìa tạp chí Lookbook di sản: ${costumeName} (${occasionName})`,
       imageUrl: LOOKBOOK_CURATED[costumeId]
     };
   }
-
-  // Fallback: Tạo prompt qua Gemini nếu có costume mới
-  const prompt = buildImageGenerationPrompt({ costumeName, bottomName, tradAccName, genzAccName, occasionName, colorPalette });
-  const result = await callGeminiAPI(prompt, apiKey);
-
-  let imagePrompt = FALLBACK_DATA.imageGeneration.imagePrompt;
-  if (result && result.imagePrompt) {
-    imagePrompt = result.imagePrompt;
-  }
-
-  const encodedPrompt = encodeURIComponent(imagePrompt);
-  let imageUrl = `https://image.pollinations.ai/prompt/${encodedPrompt}?width=768&height=1024&model=flux&nologo=true`;
 
   return {
     prompt: imagePrompt,

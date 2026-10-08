@@ -26,15 +26,17 @@ export default function LookbookModal({
   const magazineRef = useRef(null);
   const [generatedImageUrl, setGeneratedImageUrl] = useState(null);
   const [isGenerating, setIsGenerating] = useState(false);
+  const [apiError, setApiError] = useState(null);
 
   useEffect(() => {
     if (lookData) {
       // Reset state & trigger AI Gen
       setGeneratedImageUrl(null);
       setIsGenerating(true);
+      setApiError(null);
 
       const geminiKey = import.meta.env.VITE_GEMINI_API_KEY;
-      const hfKey = import.meta.env.VITE_HF_API_KEY;
+      const segmindKey = import.meta.env.VITE_SEGMIND_API_KEY;
 
       GeminiService.generateOutfitImage({
         costumeId: lookData.costume.id,
@@ -44,14 +46,21 @@ export default function LookbookModal({
         genzAccName: lookData.headwear.name,
         occasionName: lookData.occasion.name,
         colorPalette: lookData.costume.colorScheme
-      }, geminiKey, hfKey)
+      }, geminiKey, segmindKey)
       .then(res => {
-        // Gắn URL mới vào state, nhưng chưa tắt loading.
-        // Tắt loading sẽ do thẻ <img> đảm nhận (onLoad/onError).
-        setGeneratedImageUrl(res.imageUrl);
+        if (res.error) {
+          setApiError(res.error);
+          setGeneratedImageUrl(null);
+          setIsGenerating(false);
+        } else {
+          // Gắn URL mới vào state, nhưng chưa tắt loading.
+          // Tắt loading sẽ do thẻ <img> đảm nhận (onLoad/onError).
+          setGeneratedImageUrl(res.imageUrl);
+        }
       })
       .catch(err => {
         console.error("AI Gen Failed:", err);
+        setApiError('Có lỗi xảy ra khi tạo ảnh (lỗi kết nối).');
         setIsGenerating(false);
       });
 
@@ -115,6 +124,27 @@ export default function LookbookModal({
           transition={{ type: 'spring', damping: 25, stiffness: 300 }}
           onClick={(e) => e.stopPropagation()}
         >
+          {/* Full-screen Loading Overlay */}
+          {isGenerating && !apiError && (
+            <div style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', backgroundColor: 'rgba(250, 248, 245, 0.95)', zIndex: 9999, display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center', borderRadius: 'inherit', backdropFilter: 'blur(5px)' }}>
+              <span style={{ fontSize: '4rem', animation: 'spin 2s linear infinite', display: 'inline-block' }}>🎨</span>
+              <h2 style={{ color: '#9E2A2B', marginTop: '20px', fontSize: '1.8rem', textAlign: 'center' }}>Đang tạo ảnh, vui lòng chờ...</h2>
+              <p style={{ color: '#582F0E', marginTop: '10px', textAlign: 'center', maxWidth: '80%', fontSize: '1.1rem', lineHeight: '1.5' }}>
+                Nghê Thần đang kết hợp với AI để phác họa bộ Việt Phục của bạn.<br/>Quá trình này có thể mất tới 15 - 30 giây.
+              </p>
+              
+              <style>
+                {`
+                  @keyframes spin {
+                    0% { transform: rotate(0deg) scale(1); }
+                    50% { transform: rotate(180deg) scale(1.2); }
+                    100% { transform: rotate(360deg) scale(1); }
+                  }
+                `}
+              </style>
+            </div>
+          )}
+
           {/* Header Action bar */}
           <div className={styles.topBar}>
             <div className={styles.topStatus}>
@@ -142,13 +172,12 @@ export default function LookbookModal({
 
               {/* Main Photo Showcase */}
               <div className={styles.magPhotoFrame}>
-                {isGenerating && (
-                  <div className={styles.aiLoadingPlaceholder} style={{ position: 'absolute', top: 0, left: 0, zIndex: 10, width: '100%', height: '100%', minHeight: '400px', backgroundColor: '#e2d5c3', display: 'flex', alignItems: 'center', justifyContent: 'center', flexDirection: 'column' }}>
-                    <span className={styles.spinnerEmoji} style={{ fontSize: '2rem', animation: 'spin 2s linear infinite' }}>🎨</span>
-                    <p style={{ marginTop: '10px', fontWeight: 'bold', color: '#582F0E' }}>Nghê Thần đang vẽ ảnh AI...</p>
-                    <small style={{ marginTop: '5px', color: '#888', textAlign: 'center', padding: '0 10px' }}>
-                      (Nếu dùng server miễn phí có thể mất tới 30 giây, vui lòng đợi...)
-                    </small>
+                {apiError && (
+                  <div className={styles.aiErrorPlaceholder} style={{ position: 'absolute', top: 0, left: 0, zIndex: 10, width: '100%', height: '100%', minHeight: '400px', backgroundColor: '#ffd6d6', display: 'flex', alignItems: 'center', justifyContent: 'center', flexDirection: 'column', padding: '20px', textAlign: 'center' }}>
+                    <span style={{ fontSize: '2rem', marginBottom: '10px' }}>⚠️</span>
+                    <p style={{ fontWeight: 'bold', color: '#9E2A2B' }}>Không thể tạo ảnh AI</p>
+                    <p style={{ color: '#582F0E', fontSize: '0.9rem', marginTop: '5px' }}>{apiError}</p>
+                    <p style={{ color: '#888', fontSize: '0.8rem', marginTop: '10px' }}>* Đang hiển thị ảnh mẫu tĩnh *</p>
                   </div>
                 )}
                 
@@ -156,7 +185,7 @@ export default function LookbookModal({
                   src={generatedImageUrl || costume.image} 
                   alt={costume.name} 
                   className={styles.magImg}
-                  style={{ display: isGenerating ? 'none' : 'block' }}
+                  style={{ display: isGenerating ? 'none' : 'block', opacity: apiError ? 0.3 : 1 }}
                   onLoad={() => {
                     // Nếu ảnh load thành công (bao gồm cả ảnh AI hoặc ảnh gốc)
                     setIsGenerating(false);
