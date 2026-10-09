@@ -44,109 +44,90 @@ export const OCCASIONS = [
 ];
 
 export const COSTUMES = [
+  // -------------------------------------------------------------------------
+  // 1. NHÓM TRANG PHỤC TRUYỀN THỐNG (3 MẪU)
+  // -------------------------------------------------------------------------
   {
     id: 'ao_ngu_than',
-    name: 'Áo Ngũ Thân Tay Chẽn Nữ',
+    name: 'Áo Ngũ Thân Tay Chẽn',
     dynasty: 'Thời Nguyễn (Thế kỷ 18-19)',
-    image: '/trang_phuc/ao_ngu_than_tay_chen_nu.jpg',
+    image: '/ao_viet_phuc/áo ngũ thân tay chẽn.jpg',
     category: 'Thường phục / Lễ phục nhẹ',
-    story: 'Áo ngũ thân tay chẽn có 5 thân, 5 khuy cài. Ống tay ôm gọn gàng, cổ đứng chữ V, dáng dài thon thả. (Physical shape: traditional Vietnamese tunic with narrow tight sleeves, high standing collar, long flowing panels down to the knees, form-fitting silhouette).',
-    gender: 'Nữ',
+    story: 'Áo ngũ thân tay chẽn có 5 thân tượng trưng cho tứ thân phụ mẫu và chính mình, 5 khuy cài tượng trưng cho ngũ thường (Nhân - Lễ - Nghĩa - Trí - Tín). Ống tay ôm sát gọn gàng, cổ đứng chữ V, dáng dài thon thả. (Physical shape: authentic Vietnamese traditional tunic with narrow tight sleeves, high standing collar, 5 buttons fastened on the right, knee-length flowing panels, form-fitting silhouette).',
+    gender: 'Unisex',
     formality: 4,
     colorScheme: ['#8C2D19', '#1A365D', '#D4AF37'],
-    tags: ['Gen Z Favorite', 'Gọn gàng', 'Chuẩn ngũ thường'],
+    tags: ['Truyền Thống', 'Ngũ Thường', 'Gọn gàng'],
     type: 'traditional'
   },
   {
     id: 'ao_tac',
     name: 'Áo Tấc (Ngũ Thân Tay Thụng)',
     dynasty: 'Thời Nguyễn',
-    image: '/costumes/ao_tac_tay_thung.jpg',
+    image: '/ao_viet_phuc/áo tấc tay thụng.jpg',
     category: 'Lễ phục trang trọng',
-    story: 'Được mệnh danh là lễ phục quốc dân thời Nguyễn. Điểm nhấn là tay áo thụng rộng buông dài duyên dáng, cổ đứng ngay ngắn. Khi chắp tay vái lễ tạo nên phong thái trang nghiêm, thanh thoát đậm cốt cách Á Đông.',
+    story: 'Được mệnh danh là lễ phục quốc dân thời Nguyễn. Điểm nhấn là tay áo thụng rộng 30-40cm buông dài duyên dáng qua bàn tay, cổ đứng ngay ngắn. Khi chắp tay vái lễ tạo nên phong thái trang nghiêm, thanh thoát đậm cốt cách Á Đông. (Physical shape: authentic Vietnamese traditional formal robe with very wide loose flowing sleeves, high standing collar, ankle or below-knee length panels).',
     gender: 'Unisex',
     formality: 5,
     colorScheme: ['#9E2A2B', '#E6C687', '#22577A'],
-    tags: ['Trang nghiêm', 'Du xuân', 'Lễ hội'],
+    tags: ['Truyền Thống', 'Trang nghiêm', 'Lễ hội'],
     type: 'traditional'
   },
   {
     id: 'ao_nhat_binh',
     name: 'Áo Nhật Bình',
     dynasty: 'Hoàng tộc triều Nguyễn',
-    image: '/costumes/ao_nhat_binh.jpg',
+    image: '/ao_viet_phuc/áo nhật bình.jpg',
     category: 'Đại lễ phục cung đình',
-    story: 'Nhật Bình là triều phục của Hoàng hậu, Công chúa và mệnh phụ triều Nguyễn. Cổ áo hình chữ nhật viền hoa văn tinh xảo, dải dệt ngũ hành ở cổ tay rực rỡ tượng trưng cho quyền quý và cốt cách đoan trang bậc nhất.',
+    story: 'Nhật Bình là triều phục của Hoàng hậu, Công chúa và mệnh phụ triều Nguyễn. Cổ áo hình chữ nhật viền hoa văn phượng hoàng tinh xảo, dải dệt ngũ hành ở cổ tay rực rỡ tượng trưng cho quyền quý và đoan trang bậc nhất. (Physical shape: authentic royal Vietnamese court robe with prominent rectangular embroidered collar, multi-colored rainbow striped cuffs, flowing imperial silk panels).',
     gender: 'Nữ',
     formality: 5,
     colorScheme: ['#C99700', '#B83232', '#38A3A5'],
-    tags: ['Quý phái', 'Hoàng triều', 'Vương giả'],
+    tags: ['Truyền Thống', 'Quý phái', 'Vương giả'],
     type: 'traditional'
   },
+
+  // -------------------------------------------------------------------------
+  // 2. NHÓM TRANG PHỤC CÁCH TÂN (3 MẪU)
+  // -------------------------------------------------------------------------
   {
     id: 'ao_dai',
-    name: 'Áo Dài Truyền Thống / Lemur',
-    dynasty: 'Cận - Hiện đại',
-    image: '/costumes/ao_dai_truyen_thong.jpg',
-    category: 'Quốc phục Việt Nam',
-    story: 'Sự tiếp nối và cách tân kỳ diệu từ áo ngũ thân, tà áo thướt tha ôm nhẹ đường nét mềm mại nhưng vẫn giữ được nét kín đáo, duyên dáng của người Việt qua nhiều thế hệ.',
-    gender: 'Unisex',
-    formality: 4,
-    colorScheme: ['#FFFFFF', '#D90429', '#2EC4B6'],
-    tags: ['Quốc phục', 'Thanh lịch', 'Duyên dáng'],
-    type: 'traditional'
-  },
-  {
-    id: 'ao_tu_than',
-    name: 'Áo Tứ Thân Bắc Bộ',
-    dynasty: 'Dân gian Bắc Bộ',
-    image: '/costumes/ao_tu_than.jpg',
-    category: 'Trang phục dân gian Kinh Bắc',
-    story: 'Gắn liền với hình ảnh liền anh liền chị quan họ Kinh Bắc. Áo có 4 vạt (2 vạt sau khâu liền, 2 vạt trước buông lơi hoặc buộc trước bụng), mặc cùng yếm thắm, váy đụp đen và thắt lưng lụa đào mềm mại.',
+    name: 'Áo Dài Cách Tân',
+    dynasty: 'Đương đại (Gen Z)',
+    image: '/ao_viet_phuc/áo dài cách tân.jpg',
+    category: 'Dáng lửng hiện đại',
+    story: 'Thiết kế áo dài cách tân tà lửng trẻ trung, ống tay lỡ cách điệu phồng nhẹ, tà áo ngắn ngang bắp chân giúp người mặc tự do dạo phố, chụp ảnh mà vẫn thướt tha duyên dáng. (Physical shape: modern modernized Vietnamese Ao Dai with knee-length or midi tunic panels, contemporary tailored cut, soft puff sleeves).',
     gender: 'Nữ',
     formality: 3,
-    colorScheme: ['#582F0E', '#E07A5F', '#3D405B'],
-    tags: ['Kinh Bắc', 'Dân dã', 'Mộc mạc duyên'],
-    type: 'traditional'
-  },
-  {
-    id: 'ao_doi_kham',
-    name: 'Áo Đối Khâm',
-    dynasty: 'Thời Lý - Trần - Lê',
-    image: '/costumes/ao_doi_kham.jpg',
-    category: 'Cổ phục quý tộc',
-    story: 'Áo có hai vạt đối xứng xẻ dọc phía trước, thường khoác ngoài các lớp giao lĩnh hoặc yếm lụa. Tạo cảm giác bay bổng, khí chất cổ phong thoát tục khi dạo bước.',
-    gender: 'Unisex',
-    formality: 4,
-    colorScheme: ['#4A4E69', '#9A8C98', '#F2E9E4'],
-    tags: ['Cổ phong', 'Khoác ngoài', 'Bay bổng'],
-    type: 'traditional'
+    colorScheme: ['#FFFFFF', '#D90429', '#F4D35E'],
+    tags: ['Cách Tân', 'Dạo phố', 'Năng động'],
+    type: 'cach_tan'
   },
   {
     id: 'ao_yem_cach_tan',
-    name: 'Áo Yếm Cách Tân (Gen Z)',
-    dynasty: 'Đương đại',
-    image: '/costumes/ao_doi_kham.jpg',
+    name: 'Áo Yếm Lụa Hiện Đại',
+    dynasty: 'Đương đại (Gen Z)',
+    image: '/ao_viet_phuc/áo yếm lụa hiện đại.jpg',
     category: 'Remix Quyến Rũ',
-    story: 'Thiết kế lấy cảm hứng từ áo yếm dân gian, kết hợp với các đường cắt xẻ hiện đại, tôn vinh vẻ đẹp tự tin và cá tính của giới trẻ.',
+    story: 'Lấy cảm hứng từ áo yếm dân gian Kinh Bắc, may bằng lụa satin cao cấp với thiết kế cổ yếm lưng trần tinh tế, kết hợp tuyệt đẹp cùng quần suông cạp cao hoặc khoác ngoài blazer. (Physical shape: modern Vietnamese halterneck silk bodice top inspired by traditional Yem, elegant bare-back tie details, smooth luxurious silk fabric).',
     gender: 'Nữ',
-    formality: 2,
-    colorScheme: ['#D90429', '#1C1917', '#FFFFFF'],
-    tags: ['Remix', 'Cá tính', 'Tự tin'],
-    type: 'remix'
+    formality: 3,
+    colorScheme: ['#D90429', '#1C1917', '#E07A5F'],
+    tags: ['Cách Tân', 'Quyến rũ', 'Cá tính'],
+    type: 'cach_tan'
   },
   {
-    id: 'blazer_coat',
-    name: 'Áo Blazer Khoác Hờ',
-    dynasty: 'Đương đại',
-    image: '/costumes/ao_tu_than.jpg',
-    category: 'Âu phục kết hợp',
-    story: 'Blazer dáng rộng khoác ngoài trang phục truyền thống tạo nên phong cách Menswear lai Đông-Tây vô cùng thời thượng.',
+    id: 'ao_doi_kham',
+    name: 'Áo Khoác Duster Đối Khâm',
+    dynasty: 'Đương đại (Lấy cảm hứng triều Lê)',
+    image: '/ao_viet_phuc/áo khoác duster đối khâm.jpg',
+    category: 'Layering Dạo Phố',
+    story: 'Biến tấu từ phom áo Đối Khâm xẻ dọc song song thành áo khoác mỏng dáng dài duster coat, mặc layer bên ngoài trang phục hiện đại tạo nên phong thái cổ phong lãng mạn. (Physical shape: modern flowing duster coat inspired by traditional Vietnamese Doi Kham robe, parallel open-front straight lapels, lightweight breeze-catching silk/linen fabric).',
     gender: 'Unisex',
     formality: 3,
-    colorScheme: ['#D1C7BD', '#3D405B', '#1A365D'],
-    tags: ['Layering', 'Thời thượng', 'Smart-casual'],
-    type: 'remix'
+    colorScheme: ['#4A4E69', '#9A8C98', '#F2E9E4'],
+    tags: ['Cách Tân', 'Layering', 'Phóng khoáng'],
+    type: 'cach_tan'
   }
 ];
 

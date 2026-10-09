@@ -289,18 +289,17 @@ export async function generateOutfitImage(
   segmindApiKey,
   hfToken
 ) {
-  // Bộ sưu tập ảnh bìa tạp chí Lookbook di sản chuẩn mực 100% văn hóa triều đại
+  // Bộ sưu tập ảnh bìa tạp chí Lookbook chuẩn mực
   const LOOKBOOK_CURATED = {
-    ao_ngu_than: '/trang_phuc/ao_ngu_than_tay_chen_nu.jpg',
-    ao_tac: '/lookbook/ao_tac.jpg',
-    ao_nhat_binh: '/lookbook/ao_nhat_binh.jpg',
-    ao_tu_than: '/lookbook/ao_tu_than.jpg',
-    ao_dai: '/lookbook/ao_dai.jpg',
-    ao_doi_kham: '/lookbook/ao_doi_kham.jpg',
-    ao_giao_linh: '/lookbook/ao_giao_linh.jpg'
+    ao_ngu_than: '/ao_viet_phuc/áo ngũ thân tay chẽn.jpg',
+    ao_tac: '/ao_viet_phuc/áo tấc tay thụng.jpg',
+    ao_nhat_binh: '/ao_viet_phuc/áo nhật bình.jpg',
+    ao_dai: '/ao_viet_phuc/áo dài cách tân.jpg',
+    ao_yem_cach_tan: '/ao_viet_phuc/áo yếm lụa hiện đại.jpg',
+    ao_doi_kham: '/ao_viet_phuc/áo khoác duster đối khâm.jpg'
   };
 
-  const curatedFallback = (costumeId && LOOKBOOK_CURATED[costumeId]) || '/trang_phuc/ao_ngu_than_tay_chen_nu.jpg';
+  const curatedFallback = (costumeId && LOOKBOOK_CURATED[costumeId]) || '/ao_viet_phuc/áo ngũ thân tay chẽn.jpg';
 
   let imagePrompt = `A high-end editorial fashion photography of a young Vietnamese model wearing traditional royal ${costumeName || 'Vietnamese costume'} with ${bottomName || 'flowing silk trousers'}, styled with modern ${genzAccName || 'fashion accessories'} for ${occasionName || 'celebration'}, Vogue magazine photoshoot, authentic Vietnamese dynasty heritage aesthetic, intricate embroidery patterns, cinema lighting, 8k resolution, photorealistic.`;
 

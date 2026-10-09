@@ -73,6 +73,14 @@ export default function App() {
     }));
   };
 
+  // Active costume category filter in studio ('all' | 'truyen_thong' | 'cach_tan')
+  const [costumeCategoryFilter, setCostumeCategoryFilter] = useState('all');
+
+  const handleSelectFeaturedCategory = (categoryType) => {
+    setCostumeCategoryFilter(categoryType);
+    scrollTo('studio');
+  };
+
   return (
     <div className="app-layout">
       {/* 1. Header Navigation */}
@@ -89,7 +97,7 @@ export default function App() {
 
       {/* 3. Featured Categories Showcase (3 Box Tràn Viền Chuẩn vietphuc.net) */}
       <FeaturedShowcase 
-        onSelectCategory={() => scrollTo('studio')}
+        onSelectCategory={handleSelectFeaturedCategory}
       />
 
       {/* 4. Context & Occasion Selector */}
@@ -106,6 +114,8 @@ export default function App() {
         selectedOccasion={selectedOccasion}
         onFinishLook={handleFinishLook}
         onTriggerWarning={(rule) => setActiveWarningRule(rule)}
+        categoryFilter={costumeCategoryFilter}
+        onCategoryFilterChange={setCostumeCategoryFilter}
       />
 
       {/* 5. Community Lookbook Board ("Chuyền Tay") */}

@@ -7,18 +7,18 @@ export default function FeaturedShowcase({ onSelectCategory }) {
     {
       id: 'cach_tan',
       title: 'TRANG PHỤC CÁCH TÂN',
-      subtitle: 'Áo Dài Lemur & Ngũ Thân Hiện Đại',
-      img: '/costumes/ao_dai_truyen_thong.jpg',
+      subtitle: 'Áo Dài Lửng • Yếm Lụa • Duster Đối Khâm',
+      img: '/ao_viet_phuc/ảnh nền áo cách tân.jpg',
       badge: 'Trẻ trung • Năng động',
-      targetCostumeId: 'ao_dai'
+      targetCategory: 'cach_tan'
     },
     {
       id: 'truyen_thong',
       title: 'TRANG PHỤC TRUYỀN THỐNG',
       subtitle: 'Đại Lễ Phục Nhật Bình & Áo Tấc Cung Đình',
-      img: '/costumes/ao_nhat_binh.jpg',
+      img: '/ao_viet_phuc/ảnh nền trang phục truyền thống.jpg',
       badge: 'Trang trọng • Hoàng triều',
-      targetCostumeId: 'ao_nhat_binh'
+      targetCategory: 'truyen_thong'
     },
     {
       id: 'remix_genz',
@@ -26,7 +26,7 @@ export default function FeaturedShowcase({ onSelectCategory }) {
       subtitle: 'Ngũ Thân Tay Chẽn Mix Sneaker & Y2K',
       img: '/costumes/ao_tac_tay_thung.jpg',
       badge: 'Đột phá • Độc bản',
-      targetCostumeId: 'ao_tac'
+      targetCategory: 'all'
     }
   ];
 
@@ -51,7 +51,7 @@ export default function FeaturedShowcase({ onSelectCategory }) {
             <div 
               key={cat.id} 
               className={styles.fullBleedBox}
-              onClick={() => onSelectCategory(cat.targetCostumeId)}
+              onClick={() => onSelectCategory(cat.targetCategory || cat.id)}
             >
               {/* 100% Full-bleed Image */}
               <img 

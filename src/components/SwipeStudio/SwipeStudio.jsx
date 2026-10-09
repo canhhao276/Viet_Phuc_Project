@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
   RotateCw, 
@@ -33,7 +33,9 @@ import styles from './SwipeStudio.module.css';
 export default function SwipeStudio({ 
   selectedOccasion, 
   onFinishLook,
-  onTriggerWarning 
+  onTriggerWarning,
+  categoryFilter = 'all',
+  onCategoryFilterChange
 }) {
   // 4 bước quy trình phối đồ
   // 0: Áo Chính (Flashcard 3D)
@@ -45,6 +47,26 @@ export default function SwipeStudio({
   // Bộ lọc phong cách: 'all' | 'traditional' | 'remix'
   const [activeTab, setActiveTab] = useState('all');
 
+  // Bộ lọc danh mục áo: 'all' | 'truyen_thong' | 'cach_tan'
+  const [activeCategoryFilter, setActiveCategoryFilter] = useState(categoryFilter || 'all');
+
+  useEffect(() => {
+    if (categoryFilter) {
+      setActiveCategoryFilter(categoryFilter);
+    }
+  }, [categoryFilter]);
+
+  // Lọc danh sách áo theo nhóm Truyền Thống (3 mẫu) hoặc Cách Tân (3 mẫu)
+  const filteredCostumes = useMemo(() => {
+    if (activeCategoryFilter === 'truyen_thong') {
+      return COSTUMES.filter(c => c.type === 'traditional');
+    }
+    if (activeCategoryFilter === 'cach_tan') {
+      return COSTUMES.filter(c => c.type === 'cach_tan');
+    }
+    return COSTUMES;
+  }, [activeCategoryFilter]);
+
   // Lựa chọn trang phục đang phối
   const [costumeIndex, setCostumeIndex] = useState(0);
   const [selectedCostume, setSelectedCostume] = useState(COSTUMES[0]);
@@ -52,27 +74,40 @@ export default function SwipeStudio({
   const [selectedFootwear, setSelectedFootwear] = useState(FOOTWEAR[0]);
   const [selectedHeadwear, setSelectedHeadwear] = useState(HEADWEAR[0]);
 
+  // Đồng bộ active costume khi đổi bộ lọc
+  useEffect(() => {
+    if (filteredCostumes.length > 0) {
+      const idx = filteredCostumes.findIndex(c => c.id === selectedCostume?.id);
+      if (idx !== -1) {
+        setCostumeIndex(idx);
+      } else {
+        setCostumeIndex(0);
+        setSelectedCostume(filteredCostumes[0]);
+      }
+    }
+  }, [filteredCostumes]);
+
   // Trạng thái lật thẻ Flashcard 3D (mặt trước: ảnh/tên áo, mặt sau: điển tích/kiến thức)
   const [isFlipped, setIsFlipped] = useState(false);
 
   // Điều hướng chọn áo trong bộ bài Flashcard
   const handleNextCostume = () => {
     setIsFlipped(false);
-    const nextIdx = (costumeIndex + 1) % COSTUMES.length;
+    const nextIdx = (costumeIndex + 1) % filteredCostumes.length;
     setCostumeIndex(nextIdx);
-    setSelectedCostume(COSTUMES[nextIdx]);
+    setSelectedCostume(filteredCostumes[nextIdx]);
   };
 
   const handlePrevCostume = () => {
     setIsFlipped(false);
-    const prevIdx = (costumeIndex - 1 + COSTUMES.length) % COSTUMES.length;
+    const prevIdx = (costumeIndex - 1 + filteredCostumes.length) % filteredCostumes.length;
     setCostumeIndex(prevIdx);
-    setSelectedCostume(COSTUMES[prevIdx]);
+    setSelectedCostume(filteredCostumes[prevIdx]);
   };
 
   const handleSelectCostumeById = (costume) => {
     setIsFlipped(false);
-    const idx = COSTUMES.findIndex(c => c.id === costume.id);
+    const idx = filteredCostumes.findIndex(c => c.id === costume.id);
     if (idx !== -1) {
       setCostumeIndex(idx);
       setSelectedCostume(costume);
@@ -149,7 +184,7 @@ export default function SwipeStudio({
     });
   };
 
-  const activeCostume = COSTUMES[costumeIndex];
+  const activeCostume = filteredCostumes[costumeIndex] || filteredCostumes[0] || COSTUMES[0];
 
   // Lọc danh sách theo tab phong cách nếu người dùng chọn
   const filterByTab = (items) => {
@@ -298,7 +333,7 @@ export default function SwipeStudio({
                 {/* Status Bar */}
                 <div className={styles.cardStatusBar}>
                   <span className={styles.deckCounter}>
-                    Mẫu số <strong>{costumeIndex + 1}</strong> / {COSTUMES.length}
+                    Mẫu số <strong>{costumeIndex + 1}</strong> / {filteredCostumes.length}
                   </span>
 
                   <div className={styles.flipGuidance}>
@@ -454,10 +489,78 @@ export default function SwipeStudio({
 
                 {/* HÀNG CHỌN MẪU ÁO NHANH BÊN DƯỚI */}
                 <div className={styles.quickCostumePicker}>
-                  <span className={styles.pickerTitle}>Danh mục Việt phục trong bộ sưu tập:</span>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '14px', flexWrap: 'wrap', gap: '10px' }}>
+                    <span className={styles.pickerTitle}>Danh mục Việt phục trong bộ sưu tập:</span>
+                    <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
+                      <button 
+                        type="button"
+                        style={{
+                          padding: '6px 14px',
+                          borderRadius: '20px',
+                          fontSize: '0.82rem',
+                          fontWeight: '700',
+                          cursor: 'pointer',
+                          border: '1.5px solid',
+                          transition: 'all 0.2s',
+                          backgroundColor: activeCategoryFilter === 'truyen_thong' ? '#9E2A2B' : '#FAF8F5',
+                          color: activeCategoryFilter === 'truyen_thong' ? '#FFFFFF' : '#582F0E',
+                          borderColor: activeCategoryFilter === 'truyen_thong' ? '#9E2A2B' : '#E6DACB'
+                        }}
+                        onClick={() => {
+                          setActiveCategoryFilter('truyen_thong');
+                          onCategoryFilterChange && onCategoryFilterChange('truyen_thong');
+                        }}
+                      >
+                        👑 Truyền Thống (3 mẫu)
+                      </button>
+                      <button 
+                        type="button"
+                        style={{
+                          padding: '6px 14px',
+                          borderRadius: '20px',
+                          fontSize: '0.82rem',
+                          fontWeight: '700',
+                          cursor: 'pointer',
+                          border: '1.5px solid',
+                          transition: 'all 0.2s',
+                          backgroundColor: activeCategoryFilter === 'cach_tan' ? '#9E2A2B' : '#FAF8F5',
+                          color: activeCategoryFilter === 'cach_tan' ? '#FFFFFF' : '#582F0E',
+                          borderColor: activeCategoryFilter === 'cach_tan' ? '#9E2A2B' : '#E6DACB'
+                        }}
+                        onClick={() => {
+                          setActiveCategoryFilter('cach_tan');
+                          onCategoryFilterChange && onCategoryFilterChange('cach_tan');
+                        }}
+                      >
+                        ⚡ Cách Tân (3 mẫu)
+                      </button>
+                      <button 
+                        type="button"
+                        style={{
+                          padding: '6px 14px',
+                          borderRadius: '20px',
+                          fontSize: '0.82rem',
+                          fontWeight: '700',
+                          cursor: 'pointer',
+                          border: '1.5px solid',
+                          transition: 'all 0.2s',
+                          backgroundColor: activeCategoryFilter === 'all' ? '#9E2A2B' : '#FAF8F5',
+                          color: activeCategoryFilter === 'all' ? '#FFFFFF' : '#582F0E',
+                          borderColor: activeCategoryFilter === 'all' ? '#9E2A2B' : '#E6DACB'
+                        }}
+                        onClick={() => {
+                          setActiveCategoryFilter('all');
+                          onCategoryFilterChange && onCategoryFilterChange('all');
+                        }}
+                      >
+                        🌟 Tất Cả (6 mẫu)
+                      </button>
+                    </div>
+                  </div>
+
                   <div className={styles.thumbnailList}>
-                    {COSTUMES.map((costume, idx) => {
-                      const isActive = idx === costumeIndex;
+                    {filteredCostumes.map((costume) => {
+                      const isActive = costume.id === activeCostume.id;
                       return (
                         <button
                           key={costume.id}
