@@ -518,10 +518,17 @@ export default function SwipeStudio({
                           checkRules(selectedCostume, bottom, selectedFootwear, selectedHeadwear);
                         }}
                       >
-                        <div 
-                          className={styles.colorSwatch} 
-                          style={{ backgroundColor: bottom.colorCode }}
-                        />
+                        {bottom.image ? (
+                          <div 
+                            className={styles.colorSwatch}
+                            style={{ backgroundImage: `url(${bottom.image})`, backgroundSize: 'cover', backgroundPosition: 'center', backgroundColor: bottom.colorCode || bottom.color }}
+                          />
+                        ) : (
+                          <div 
+                            className={styles.colorSwatch} 
+                            style={{ backgroundColor: bottom.colorCode || bottom.color }}
+                          />
+                        )}
                         <div className={styles.optionInfo}>
                           <div className={styles.optionHeaderRow}>
                             <strong>{bottom.name}</strong>
@@ -584,9 +591,13 @@ export default function SwipeStudio({
                           checkRules(selectedCostume, selectedBottom, footwear, selectedHeadwear);
                         }}
                       >
-                        <div className={footwear.type === 'traditional' ? styles.accBadge : styles.accBadgeGenz}>
-                          <Footprints size={20} />
-                        </div>
+                        {footwear.image ? (
+                          <img src={footwear.image} alt={footwear.name} style={{ width: 48, height: 48, objectFit: 'cover', borderRadius: '8px', flexShrink: 0 }} />
+                        ) : (
+                          <div className={footwear.type === 'traditional' ? styles.accBadge : styles.accBadgeGenz}>
+                            <Footprints size={20} />
+                          </div>
+                        )}
                         <div className={styles.optionInfo}>
                           <div className={styles.optionHeaderRow}>
                             <strong>{footwear.name}</strong>
@@ -649,9 +660,13 @@ export default function SwipeStudio({
                           checkRules(selectedCostume, selectedBottom, selectedFootwear, headwear);
                         }}
                       >
-                        <div className={headwear.type === 'traditional' ? styles.accBadge : styles.accBadgeGenz}>
-                          <Glasses size={20} />
-                        </div>
+                        {headwear.image ? (
+                          <img src={headwear.image} alt={headwear.name} style={{ width: 48, height: 48, objectFit: 'cover', borderRadius: '8px', flexShrink: 0 }} />
+                        ) : (
+                          <div className={headwear.type === 'traditional' ? styles.accBadge : styles.accBadgeGenz}>
+                            <Glasses size={20} />
+                          </div>
+                        )}
                         <div className={styles.optionInfo}>
                           <div className={styles.optionHeaderRow}>
                             <strong>{headwear.name}</strong>

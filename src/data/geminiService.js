@@ -284,14 +284,14 @@ export async function getRemixSuggestion({ originalLookName, mixFormula, desired
  * Fallback: Bộ sưu tập ảnh bìa tạp chí Di Sản Hoàng Gia chuẩn mực 100% văn hóa triều đại.
  */
 export async function generateOutfitImage(
-  { costumeId, costumeName, bottomName, tradAccName, genzAccName, occasionName, colorPalette },
+  { costumeId, costumeName, costumeDesc, bottomName, bottomDesc, tradAccName, tradAccDesc, genzAccName, genzAccDesc, occasionName, colorPalette },
   apiKey,
   segmindApiKey,
   hfToken
 ) {
   // Bộ sưu tập ảnh bìa tạp chí Lookbook di sản chuẩn mực 100% văn hóa triều đại
   const LOOKBOOK_CURATED = {
-    ao_ngu_than: '/lookbook/ao_ngu_than.jpg',
+    ao_ngu_than: '/trang_phuc/ao_ngu_than_tay_chen_nu.jpg',
     ao_tac: '/lookbook/ao_tac.jpg',
     ao_nhat_binh: '/lookbook/ao_nhat_binh.jpg',
     ao_tu_than: '/lookbook/ao_tu_than.jpg',
@@ -300,7 +300,7 @@ export async function generateOutfitImage(
     ao_giao_linh: '/lookbook/ao_giao_linh.jpg'
   };
 
-  const curatedFallback = (costumeId && LOOKBOOK_CURATED[costumeId]) || '/lookbook/ao_ngu_than.jpg';
+  const curatedFallback = (costumeId && LOOKBOOK_CURATED[costumeId]) || '/trang_phuc/ao_ngu_than_tay_chen_nu.jpg';
 
   let imagePrompt = `A high-end editorial fashion photography of a young Vietnamese model wearing traditional royal ${costumeName || 'Vietnamese costume'} with ${bottomName || 'flowing silk trousers'}, styled with modern ${genzAccName || 'fashion accessories'} for ${occasionName || 'celebration'}, Vogue magazine photoshoot, authentic Vietnamese dynasty heritage aesthetic, intricate embroidery patterns, cinema lighting, 8k resolution, photorealistic.`;
 
@@ -310,7 +310,7 @@ export async function generateOutfitImage(
       const geminiUrl = `${GEMINI_CONFIG.apiUrl}?key=${apiKey}`;
       const geminiBody = {
         system_instruction: { parts: [{ text: SYSTEM_PROMPT }] },
-        contents: [{ parts: [{ text: buildImageGenerationPrompt({ costumeName, bottomName, tradAccName, genzAccName, occasionName, colorPalette }) }] }],
+        contents: [{ parts: [{ text: buildImageGenerationPrompt({ costumeName, costumeDesc, bottomName, bottomDesc, tradAccName, tradAccDesc, genzAccName, genzAccDesc, occasionName, colorPalette }) }] }],
         generationConfig: GEMINI_CONFIG.generationConfig
       };
 
@@ -338,10 +338,10 @@ export async function generateOutfitImage(
     const { Client } = await import('@gradio/client');
     const clientOptions = hfToken && hfToken !== 'your_hf_token_here' ? { hf_token: hfToken } : {};
 
-    // Timeout 25s phòng trường hợp ZeroGPU bị xếp hàng lâu
+    // Timeout 90s phòng trường hợp ZeroGPU bị xếp hàng lâu
     const connectPromise = Client.connect('black-forest-labs/FLUX.1-schnell', clientOptions);
     const timeoutPromise = new Promise((_, reject) =>
-      setTimeout(() => reject(new Error('Hugging Face Space Timeout (25s)')), 25000)
+      setTimeout(() => reject(new Error('Hugging Face Space Timeout (90s)')), 90000)
     );
 
     const client = await Promise.race([connectPromise, timeoutPromise]);

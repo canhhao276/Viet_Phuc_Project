@@ -295,20 +295,22 @@ CHỈ TRẢ VỀ JSON, KHÔNG có text khác.`;
 /**
  * Tạo prompt tiếng Anh chuyên sâu để gửi cho Image Generation API (như Midjourney, DALL-E, Pollinations).
  */
-export function buildImageGenerationPrompt({ costumeName, bottomName, tradAccName, genzAccName, occasionName, colorPalette }) {
-  return `Write a highly detailed English prompt for an AI Image Generator (like Midjourney or DALL-E) to generate a realistic full-body fashion lookbook photo of a young Vietnamese person wearing a modernized traditional outfit.
+export function buildImageGenerationPrompt({ costumeName, costumeDesc, bottomName, bottomDesc, tradAccName, tradAccDesc, genzAccName, genzAccDesc, occasionName, colorPalette }) {
+  return `Write a highly detailed English prompt for an AI Image Generator (like Midjourney or FLUX) to generate a realistic full-body fashion lookbook photo of a young Vietnamese person wearing a modernized traditional outfit.
 
 OUTFIT DETAILS:
-- Main Costume: ${costumeName} (Translate to descriptive English, e.g., "Ao Dai", "Ngu Than traditional tunic")
-- Bottom: ${bottomName} (Very important to show the pants/skirt in the image)
-- Footwear: ${tradAccName}
-- Headwear & Accessories: ${genzAccName}
+- Main Costume: ${costumeName} (Description: ${costumeDesc || ''}. Translate to English and EXPLICITLY describe its authentic physical shape and cut based on this description to prevent AI from altering it)
+- Bottom: ${bottomName} (Description: ${bottomDesc || ''}. Explicitly describe the shape, e.g., loose wide-leg silk pants)
+- Footwear: ${tradAccName} (Description: ${tradAccDesc || ''}. CRITICAL: Explicitly describe the exact physical shape of the footwear in English based on this description. DO NOT let the AI change the shape of the footwear)
+- Headwear & Accessories: ${genzAccName} (Description: ${genzAccDesc || ''})
 - Colors: ${colorPalette ? colorPalette.join(', ') : 'harmonious colors'}
 - Vibe/Context: ${occasionName}
 
+CRITICAL RULE: You must instruct the Image Generator to creatively change the colors and patterns of the clothes and footwear, BUT it MUST strictly preserve the exact traditional shape, silhouette, and design structure. The English prompt MUST include strong keywords like "authentic traditional silhouette", "exact garment shape preserved", "authentic footwear shape".
+
 REQUIREMENTS OUTPUT (JSON):
 {
-  "imagePrompt": "The highly descriptive english prompt. Must include: subject description, outfit details, lighting, camera angle, and background context. Start with 'A cinematic full-body fashion shot of...' and explicitly mention seeing the bottom/pants and footwear. (max 50-70 words)"
+  "imagePrompt": "The highly descriptive english prompt. Must include: subject description, explicit physical shape of outfit and footwear, colors/patterns, lighting, and background context. Start with 'A cinematic full-body fashion shot of...' and explicitly mention seeing the footwear and pants. (max 60-80 words)"
 }
 
 CHỈ TRẢ VỀ JSON, KHÔNG CÓ TEXT KHÁC.`;

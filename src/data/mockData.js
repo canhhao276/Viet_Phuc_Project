@@ -46,12 +46,12 @@ export const OCCASIONS = [
 export const COSTUMES = [
   {
     id: 'ao_ngu_than',
-    name: 'Áo Ngũ Thân Tay Chẽn',
+    name: 'Áo Ngũ Thân Tay Chẽn Nữ',
     dynasty: 'Thời Nguyễn (Thế kỷ 18-19)',
-    image: '/costumes/ao_ngu_than_tay_chen.jpg',
+    image: '/trang_phuc/ao_ngu_than_tay_chen_nu.jpg',
     category: 'Thường phục / Lễ phục nhẹ',
-    story: 'Áo ngũ thân tay chẽn có 5 thân tượng trưng cho tứ thân phụ mẫu và chính bản thân người mặc, 5 khuy cài tượng trưng cho ngũ thường (Nhân - Lễ - Nghĩa - Trí - Tín). Ống tay ôm gọn gàng, cực kỳ tôn dáng và tiện lợi cho người trẻ năng động.',
-    gender: 'Unisex',
+    story: 'Áo ngũ thân tay chẽn có 5 thân, 5 khuy cài. Ống tay ôm gọn gàng, cổ đứng chữ V, dáng dài thon thả. (Physical shape: traditional Vietnamese tunic with narrow tight sleeves, high standing collar, long flowing panels down to the knees, form-fitting silhouette).',
+    gender: 'Nữ',
     formality: 4,
     colorScheme: ['#8C2D19', '#1A365D', '#D4AF37'],
     tags: ['Gen Z Favorite', 'Gọn gàng', 'Chuẩn ngũ thường'],
@@ -155,8 +155,9 @@ export const BOTTOMS = [
     id: 'quan_lua_trang',
     name: 'Quần lụa trắng ống suông',
     type: 'traditional',
-    description: 'Chất liệu lụa Tơ Tằm mềm mại, dáng suông truyền thống thanh lịch',
-    color: '#FFFFFF'
+    description: 'Chất liệu lụa Tơ Tằm mềm mại, dáng suông rộng truyền thống thanh lịch (Physical shape: very loose wide-leg flowing silk trousers, floor-length, straight cut)',
+    color: '#FFFFFF',
+    image: '/trang_phuc/quan_lua_trang_ong_suong.png'
   },
   {
     id: 'quan_lua_den',
@@ -200,8 +201,9 @@ export const FOOTWEAR = [
     id: 'guoc_moc',
     name: 'Guốc mộc quai nhung',
     icon: 'ShieldCheck',
-    desc: 'Âm thanh lách cách thân quen nơi phố cổ.',
-    type: 'traditional'
+    desc: 'Âm thanh lách cách thân quen. (Physical shape: authentic Vietnamese wooden clogs, arched carved wood block sole, open toe, with a soft velvet arch strap across the foot)',
+    type: 'traditional',
+    image: '/trang_phuc/guoc_moc_quai_nhung.jpg'
   },
   {
     id: 'sneaker_retro',
@@ -236,10 +238,11 @@ export const HEADWEAR = [
   },
   {
     id: 'chuoi_ngoc',
-    name: 'Chuỗi vòng ngọc trai',
+    name: 'Vòng ngọc trai',
     icon: 'CircleDot',
-    desc: 'Điểm xuyết nơi cổ áo, kiêu sa đài các.',
-    type: 'traditional'
+    desc: 'Điểm xuyết nơi cổ áo, kiêu sa đài các. (Physical shape: elegant pearl necklace, simple round pearls strung together)',
+    type: 'traditional',
+    image: '/trang_phuc/Vong_ngoc_trai.jpg'
   },
   {
     id: 'kinh_y2k',

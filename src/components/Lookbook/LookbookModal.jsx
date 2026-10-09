@@ -42,9 +42,13 @@ export default function LookbookModal({
       GeminiService.generateOutfitImage({
         costumeId: lookData.costume.id,
         costumeName: lookData.costume.name,
+        costumeDesc: lookData.costume.story,
         bottomName: lookData.bottom.name,
+        bottomDesc: lookData.bottom.description,
         tradAccName: lookData.footwear.name,
+        tradAccDesc: lookData.footwear.desc,
         genzAccName: lookData.headwear.name,
+        genzAccDesc: lookData.headwear.desc,
         occasionName: lookData.occasion.name,
         colorPalette: lookData.costume.colorScheme
       }, geminiKey, segmindKey, hfToken)
@@ -132,7 +136,7 @@ export default function LookbookModal({
               <span style={{ fontSize: '4rem', animation: 'spin 2s linear infinite', display: 'inline-block' }}>🎨</span>
               <h2 style={{ color: '#9E2A2B', marginTop: '20px', fontSize: '1.8rem', textAlign: 'center', fontFamily: "'Cinzel Decorative', serif" }}>Đang sáng tác Lookbook Tạp Chí...</h2>
               <p style={{ color: '#582F0E', marginTop: '10px', textAlign: 'center', maxWidth: '80%', fontSize: '1.05rem', lineHeight: '1.6' }}>
-                Hệ thống AI đang kết nối GPU ZeroGPU (FLUX.1-schnell) để phác họa vẻ đẹp trang phục của bạn.<br/>Quá trình sáng tác mất khoảng 5 - 15 giây.
+                Hệ thống AI đang kết nối GPU ZeroGPU (FLUX.1-schnell) để phác họa vẻ đẹp trang phục của bạn.<br/>Quá trình sáng tác có thể mất từ 15 - 90 giây tùy vào tình trạng hàng chờ của server.
               </p>
               
               <style>
